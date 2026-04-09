@@ -1,7 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Sun, Moon, Menu, X } from 'lucide-react';
 import { useTheme } from '@/components/ThemeProvider';
@@ -18,14 +17,14 @@ export default function Navbar({ logoUrl, logoText }: { logoUrl?: string; logoTe
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
   const { theme, toggle } = useTheme();
+  const isLight = theme === 'light';
 
   useEffect(() => {
     const fn = () => {
-      // Go solid once we've scrolled past the hero (approx 80vh)
       const heroH = window.innerHeight * 0.8;
       setScrolled(window.scrollY > heroH);
     };
-    fn(); // run once on mount
+    fn();
     window.addEventListener('scroll', fn, { passive: true });
     return () => window.removeEventListener('scroll', fn);
   }, []);
@@ -40,12 +39,37 @@ export default function Navbar({ logoUrl, logoText }: { logoUrl?: string; logoTe
     if (logoUrl) {
       return (
         <Link href="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
-          <img src={logoUrl} alt={logoText || 'Logo'} style={{ height: 36, width: 'auto', objectFit: 'contain', maxWidth: 160 }} />
+          <img
+            src={logoUrl}
+            alt={logoText || 'Logo'}
+            style={{
+              height: 36,
+              width: 'auto',
+              objectFit: 'contain',
+              maxWidth: 160,
+              // In light mode, if logo is white/light, invert to make it dark
+              filter: isLight ? 'brightness(0)' : 'brightness(1)',
+              transition: 'filter 0.3s ease',
+            }}
+          />
         </Link>
       );
     }
+
+    // Text logo with explicit color that adapts to theme
     return (
-      <Link href="/" style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '1.5rem', color: 'var(--text)', textDecoration: 'none', letterSpacing: '-0.04em' }}>
+      <Link
+        href="/"
+        style={{
+          fontFamily: 'var(--font-display)',
+          fontWeight: 900,
+          fontSize: '1.5rem',
+          color: 'var(--text)',
+          textDecoration: 'none',
+          letterSpacing: '-0.04em',
+          transition: 'color 0.3s ease',
+        }}
+      >
         {logoText || 'C#'}
       </Link>
     );
@@ -59,7 +83,20 @@ export default function Navbar({ logoUrl, logoText }: { logoUrl?: string; logoTe
         <ul style={{ display: 'flex', gap: '2.5rem', listStyle: 'none', alignItems: 'center' }} id="desktop-nav">
           {navLinks.map(link => (
             <li key={link.href}>
-              <Link href={link.href} style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', fontWeight: 500, color: pathname === link.href ? 'var(--text)' : 'var(--text-muted)', textDecoration: 'none', letterSpacing: '0.02em', transition: 'color 0.2s', borderBottom: pathname === link.href ? '1px solid var(--primary)' : '1px solid transparent', paddingBottom: '2px' }}>
+              <Link
+                href={link.href}
+                style={{
+                  fontFamily: 'var(--font-body)',
+                  fontSize: '0.875rem',
+                  fontWeight: 500,
+                  color: pathname === link.href ? 'var(--text)' : 'var(--text-muted)',
+                  textDecoration: 'none',
+                  letterSpacing: '0.02em',
+                  transition: 'color 0.2s',
+                  borderBottom: pathname === link.href ? '1px solid var(--primary)' : '1px solid transparent',
+                  paddingBottom: '2px',
+                }}
+              >
                 {link.label}
               </Link>
             </li>
@@ -71,7 +108,23 @@ export default function Navbar({ logoUrl, logoText }: { logoUrl?: string; logoTe
             {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
           </button>
           <Link href="/contact" className="btn-primary" id="nav-cta" style={{ padding: '0.55rem 1.4rem', fontSize: '0.85rem' }}>Let's Talk</Link>
-          <button id="hamburger" onClick={() => setMobileOpen(v => !v)} aria-label="Menu" style={{ width: 38, height: 38, border: '1.5px solid var(--border-strong)', borderRadius: '0.5rem', background: 'transparent', color: 'var(--text)', cursor: 'none', display: 'none', alignItems: 'center', justifyContent: 'center' }}>
+          <button
+            id="hamburger"
+            onClick={() => setMobileOpen(v => !v)}
+            aria-label="Menu"
+            style={{
+              width: 38,
+              height: 38,
+              border: '1.5px solid var(--border-strong)',
+              borderRadius: '0.5rem',
+              background: 'transparent',
+              color: 'var(--text)',
+              cursor: 'none',
+              display: 'none',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
             {mobileOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
         </div>
@@ -81,7 +134,23 @@ export default function Navbar({ logoUrl, logoText }: { logoUrl?: string; logoTe
         {navLinks.map(link => (
           <Link key={link.href} href={link.href} onClick={() => setMobileOpen(false)}>{link.label}</Link>
         ))}
-        <button onClick={toggle} style={{ marginTop: '1rem', background: 'transparent', border: '1.5px solid var(--border-strong)', borderRadius: '9999px', padding: '0.6rem 1.4rem', color: 'var(--text-muted)', cursor: 'none', fontFamily: 'var(--font-body)', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <button
+          onClick={toggle}
+          style={{
+            marginTop: '1rem',
+            background: 'transparent',
+            border: '1.5px solid var(--border-strong)',
+            borderRadius: '9999px',
+            padding: '0.6rem 1.4rem',
+            color: 'var(--text-muted)',
+            cursor: 'none',
+            fontFamily: 'var(--font-body)',
+            fontSize: '0.9rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+          }}
+        >
           {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
           {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
         </button>

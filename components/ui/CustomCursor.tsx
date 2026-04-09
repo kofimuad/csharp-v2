@@ -7,18 +7,17 @@ export default function CustomCursor() {
   const dotRef = useRef<HTMLDivElement>(null);
   const { theme } = useTheme();
   const [onDark, setOnDark] = useState(true);
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     const ring = ringRef.current;
     const dot = dotRef.current;
     if (!ring || !dot) return;
 
-    // Start slightly off-screen
-    let mouseX = -100,
-      mouseY = -100;
-    let ringX = -100,
-      ringY = -100;
+    let mouseX = -100, mouseY = -100;
+    let ringX = -100, ringY = -100;
     let raf: number;
+    let hasMovedOnce = false;
 
     const onMove = (e: MouseEvent) => {
       mouseX = e.clientX;
@@ -27,13 +26,17 @@ export default function CustomCursor() {
       // Update dot immediately
       dot.style.left = `${mouseX}px`;
       dot.style.top = `${mouseY}px`;
-      dot.style.opacity = "1";
-      ring.style.opacity = "1";
 
-      const el = document.elementFromPoint(
-        e.clientX,
-        e.clientY,
-      ) as HTMLElement | null;
+      if (!hasMovedOnce) {
+        hasMovedOnce = true;
+        ringX = mouseX;
+        ringY = mouseY;
+        ring.style.left = `${ringX}px`;
+        ring.style.top = `${ringY}px`;
+        setVisible(true);
+      }
+
+      const el = document.elementFromPoint(e.clientX, e.clientY) as HTMLElement | null;
       if (el) {
         let node: HTMLElement | null = el;
         let isDarkSection = theme === "dark";
@@ -63,29 +66,50 @@ export default function CustomCursor() {
       raf = requestAnimationFrame(animate);
     };
 
+    // Hover detection - include ALL interactive elements
+    const HOVER_SELECTORS = [
+      'a', 'button', '[role="button"]',
+      '.hm-card', '.portfolio-item', '.service-item',
+      '.accordion-header', '.filter-btn', '.proj-nav-btn',
+      '.t-btn', '.admin-btn-save', '.admin-btn-ghost',
+      '.admin-btn-danger', '.admin-nav-item',
+      '.media-upload-zone', '.media-preview-item',
+      '.media-preview-remove', '.project-card',
+      'input[type="checkbox"]', 'select',
+      'label', '.admin-table tr',
+    ].join(', ');
+
     const onOver = (e: MouseEvent) => {
       const t = e.target as HTMLElement;
-      if (
-        t.closest(
-          'a, button, [role="button"], .hm-card, .portfolio-item, .service-item, .accordion-header, .filter-btn, .proj-nav-btn, .t-btn, .admin-btn-save, .admin-btn-ghost, .admin-btn-danger, .admin-nav-item, .media-upload-zone',
-        )
-      ) {
+      if (t.closest(HOVER_SELECTORS)) {
         ring.classList.add("hovering");
       }
     };
     const onOut = (e: MouseEvent) => {
       const t = e.relatedTarget as HTMLElement | null;
-      if (!t?.closest('a, button, [role="button"]'))
+      if (!t?.closest(HOVER_SELECTORS)) {
         ring.classList.remove("hovering");
+      }
     };
     const onDown = () => ring.classList.add("clicking");
     const onUp = () => ring.classList.remove("clicking");
+
+    // Ensure cursor stays visible when entering/leaving page
+    const onEnter = () => {
+      ring.style.opacity = "1";
+      dot.style.opacity = "1";
+    };
+    const onLeave = () => {
+      // Don't hide - just keep last position
+    };
 
     document.addEventListener("mousemove", onMove, { passive: true });
     document.addEventListener("mouseover", onOver, { passive: true });
     document.addEventListener("mouseout", onOut, { passive: true });
     document.addEventListener("mousedown", onDown, { passive: true });
     document.addEventListener("mouseup", onUp, { passive: true });
+    document.addEventListener("mouseenter", onEnter, { passive: true });
+    document.addEventListener("mouseleave", onLeave, { passive: true });
 
     raf = requestAnimationFrame(animate);
 
@@ -95,6 +119,8 @@ export default function CustomCursor() {
       document.removeEventListener("mouseout", onOut);
       document.removeEventListener("mousedown", onDown);
       document.removeEventListener("mouseup", onUp);
+      document.removeEventListener("mouseenter", onEnter);
+      document.removeEventListener("mouseleave", onLeave);
       cancelAnimationFrame(raf);
     };
   }, [theme]);
@@ -120,8 +146,8 @@ export default function CustomCursor() {
           zIndex: 99999,
           transform: "translate(-50%, -50%)",
           transition:
-            "width 0.22s ease, height 0.22s, background 0.22s, border-color 0.3s, opacity 0.3s",
-          opacity: 0, // Starts invisible
+            "width 0.22s ease, height 0.22s, background 0.22s, border-color 0.3s",
+          opacity: visible ? 1 : 0,
         }}
       />
       <div
@@ -138,19 +164,13 @@ export default function CustomCursor() {
           pointerEvents: "none",
           zIndex: 100000,
           transform: "translate(-50%, -50%)",
-          transition: "background 0.3s, opacity 0.15s",
-          opacity: 0, // Starts invisible
+          transition: "background 0.3s",
+          opacity: visible ? 1 : 0,
         }}
       />
-      {/* The suppressHydrationWarning is a magic attribute that tells Next.js 
-        "don't worry about the quotes here." It's the cleanest fix for this specific bug.
-      */}
       <style suppressHydrationWarning>{`
         body { cursor: none !important; }
-        a, button, [role="button"], label, select,
-        .hm-card, .filter-btn, .accordion-header,
-        .service-item, .t-btn, .admin-nav-item,
-        .media-upload-zone, .media-preview-remove { cursor: none !important; }
+        *, *::before, *::after { cursor: none !important; }
         
         #custom-cursor.hovering {
           width: 52px !important; height: 52px !important;
@@ -163,6 +183,7 @@ export default function CustomCursor() {
         }
         @media (pointer: coarse) {
           body { cursor: auto !important; }
+          *, *::before, *::after { cursor: auto !important; }
           #custom-cursor, #custom-cursor-dot { display: none !important; }
         }
       `}</style>

@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import Link from 'next/link';
-import { X, ArrowRight, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
+import { X, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface ProjectDetailProps {
   project: any;
@@ -19,7 +19,7 @@ export default function ProjectDetail({ project, onClose }: ProjectDetailProps) 
   if (project.gallery?.length) allMedia.push(...project.gallery);
 
   useEffect(() => {
-    const t = setTimeout(() => setPhase('open'), 650);
+    const t = setTimeout(() => setPhase('open'), 50);
     document.body.style.overflow = 'hidden';
     return () => { clearTimeout(t); };
   }, []);
@@ -29,7 +29,7 @@ export default function ProjectDetail({ project, onClose }: ProjectDetailProps) 
     setTimeout(() => {
       document.body.style.overflow = '';
       onClose();
-    }, 420);
+    }, 600);
   }, [onClose]);
 
   // Keyboard navigation
@@ -48,12 +48,48 @@ export default function ProjectDetail({ project, onClose }: ProjectDetailProps) 
   return (
     <div
       ref={scrollRef}
-      className={`pd-backdrop ${phase === 'entering' ? 'entering' : phase === 'exiting' ? 'exiting' : ''}`}
       role="dialog"
       aria-modal="true"
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 8000,
+        background: 'var(--bg)',
+        overflowY: 'auto',
+        overflowX: 'hidden',
+        transform: phase === 'entering' ? 'translateY(100%)' : phase === 'exiting' ? 'translateY(100%)' : 'translateY(0)',
+        transition: phase === 'entering'
+          ? 'transform 0.75s cubic-bezier(0.16, 1, 0.3, 1)'
+          : phase === 'exiting'
+          ? 'transform 0.55s cubic-bezier(0.55, 0, 1, 0.8)'
+          : 'transform 0.75s cubic-bezier(0.16, 1, 0.3, 1)',
+        willChange: 'transform',
+      }}
     >
       {/* Close button */}
-      <button className="pd-close" onClick={close} aria-label="Close project">
+      <button
+        onClick={close}
+        aria-label="Close project"
+        style={{
+          position: 'fixed',
+          top: '1.5rem',
+          left: '1.5rem',
+          zIndex: 9000,
+          width: 44,
+          height: 44,
+          borderRadius: '50%',
+          background: 'rgba(255,255,255,0.12)',
+          border: '1.5px solid rgba(255,255,255,0.25)',
+          color: 'white',
+          cursor: 'none',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backdropFilter: 'blur(8px)',
+          transition: 'background 0.2s, transform 0.2s',
+        }}
+        className="pd-close"
+      >
         <X size={18} />
       </button>
 
@@ -61,14 +97,41 @@ export default function ProjectDetail({ project, onClose }: ProjectDetailProps) 
       <div className="pd-hero">
         {hero && (
           hero.type === 'video' ? (
-            <video className="pd-hero-media" src={hero.url} autoPlay muted loop playsInline />
+            <video
+              className="pd-hero-media"
+              src={hero.url}
+              autoPlay
+              muted
+              loop
+              playsInline
+              style={{
+                opacity: phase === 'open' ? 1 : 0,
+                transition: 'opacity 0.6s ease 0.3s',
+              }}
+            />
           ) : (
-            <img className="pd-hero-media" src={hero.url} alt={project.title} />
+            <img
+              className="pd-hero-media"
+              src={hero.url}
+              alt={project.title}
+              style={{
+                opacity: phase === 'open' ? 1 : 0,
+                transition: 'opacity 0.6s ease 0.3s',
+                transform: phase === 'open' ? 'scale(1)' : 'scale(1.08)',
+              }}
+            />
           )
         )}
         {!hero && <div style={{ width: '100%', height: '100%', background: 'var(--surface-high)' }} />}
         <div className="pd-hero-overlay" />
-        <div className="pd-hero-title">
+        <div
+          className="pd-hero-title"
+          style={{
+            opacity: phase === 'open' ? 1 : 0,
+            transform: phase === 'open' ? 'translateY(0)' : 'translateY(40px)',
+            transition: 'opacity 0.7s ease 0.25s, transform 0.7s cubic-bezier(0.16,1,0.3,1) 0.25s',
+          }}
+        >
           <h1 className="pd-hero-h1">{project.title}</h1>
           <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.9rem', color: 'rgba(255,255,255,0.65)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
             {project.tags?.join('  ·  ')}
@@ -77,7 +140,13 @@ export default function ProjectDetail({ project, onClose }: ProjectDetailProps) 
       </div>
 
       {/* Meta bar */}
-      <div className="pd-meta-bar">
+      <div
+        className="pd-meta-bar"
+        style={{
+          opacity: phase === 'open' ? 1 : 0,
+          transition: 'opacity 0.5s ease 0.5s',
+        }}
+      >
         {project.year && (
           <div className="pd-meta-item">
             <p className="pd-meta-label">Year</p>
@@ -110,7 +179,14 @@ export default function ProjectDetail({ project, onClose }: ProjectDetailProps) 
       </div>
 
       {/* Body content */}
-      <div className="pd-body">
+      <div
+        className="pd-body"
+        style={{
+          opacity: phase === 'open' ? 1 : 0,
+          transform: phase === 'open' ? 'translateY(0)' : 'translateY(20px)',
+          transition: 'opacity 0.6s ease 0.55s, transform 0.6s ease 0.55s',
+        }}
+      >
         {/* Problem + Solution */}
         {(project.problem || project.solution) && (
           <div className="pd-two-col">
@@ -156,7 +232,7 @@ export default function ProjectDetail({ project, onClose }: ProjectDetailProps) 
       {allMedia.length > 1 && (
         <div className="pd-gallery" style={{ maxWidth: 1200, margin: '0 auto', padding: '0 3rem 6rem' }}>
           <p className="pd-section-title" style={{ marginBottom: '2rem' }}>Gallery</p>
-          {/* Keyboard/arrow navigation for gallery highlight */}
+          {/* Navigation */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem' }}>
             <button
               onClick={() => setGalleryIdx(i => (i - 1 + allMedia.length) % allMedia.length)}
@@ -177,14 +253,14 @@ export default function ProjectDetail({ project, onClose }: ProjectDetailProps) 
                 key={galleryIdx}
                 src={allMedia[galleryIdx].url}
                 controls
-                style={{ width: '100%', display: 'block', maxHeight: '70vh', objectFit: 'contain', background: '#000', animation: 'pdFadeIn 0.4s ease' }}
+                style={{ width: '100%', display: 'block', maxHeight: '70vh', objectFit: 'contain', background: '#000' }}
               />
             ) : (
               <img
                 key={galleryIdx}
                 src={allMedia[galleryIdx].url}
                 alt={`${project.title} ${galleryIdx + 1}`}
-                style={{ width: '100%', display: 'block', maxHeight: '70vh', objectFit: 'contain', background: 'var(--surface-high)', animation: 'pdFadeIn 0.4s ease' }}
+                style={{ width: '100%', display: 'block', maxHeight: '70vh', objectFit: 'contain', background: 'var(--surface-high)' }}
               />
             )}
           </div>
@@ -206,6 +282,23 @@ export default function ProjectDetail({ project, onClose }: ProjectDetailProps) 
           </div>
         </div>
       )}
+
+      <style>{`
+        .pd-close:hover {
+          background: rgba(255,255,255,0.22) !important;
+          transform: scale(1.08) rotate(90deg) !important;
+        }
+        .light .pd-close {
+          background: rgba(0,0,0,0.08) !important;
+          border-color: rgba(0,0,0,0.2) !important;
+          color: #111 !important;
+        }
+        @media (max-width: 768px) {
+          .pd-body { padding: 3rem 1.5rem !important; }
+          .pd-hero-title { padding: 2.5rem 1.5rem 2rem !important; }
+          .pd-meta-bar { padding: 2rem 1.5rem !important; gap: 1.5rem !important; }
+        }
+      `}</style>
     </div>
   );
 }
