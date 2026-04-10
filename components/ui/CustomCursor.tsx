@@ -125,9 +125,18 @@ export default function CustomCursor() {
     };
   }, [theme]);
 
+  const isLightTheme = theme === "light";
   const isLight = !onDark;
-  const ringColor = isLight ? "rgba(0,0,0,0.7)" : "rgba(255,255,255,0.85)";
-  const dotColor = isLight ? "#111" : "#fff";
+  const ringColor = isLightTheme
+    ? "rgba(42,92,255,0.9)"
+    : isLight
+      ? "rgba(0,0,0,0.7)"
+      : "rgba(255,255,255,0.85)";
+  const dotColor = isLightTheme
+    ? "#2a5cff"
+    : isLight
+      ? "#111"
+      : "#fff";
 
   return (
     <>
@@ -172,14 +181,14 @@ export default function CustomCursor() {
         body { cursor: none !important; }
         *, *::before, *::after { cursor: none !important; }
         
-        #custom-cursor.hovering {
+          #custom-cursor.hovering {
           width: 52px !important; height: 52px !important;
-          background: ${isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.07)"} !important;
-          border-color: ${isLight ? "rgba(42,92,255,0.8)" : "rgba(255,255,255,0.9)"} !important;
+          background: ${isLightTheme ? "rgba(42,92,255,0.08)" : isLight ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.07)"} !important;
+          border-color: ${isLightTheme ? "rgba(42,92,255,0.95)" : isLight ? "rgba(42,92,255,0.8)" : "rgba(255,255,255,0.9)"} !important;
         }
         #custom-cursor.clicking {
           width: 14px !important; height: 14px !important;
-          background: ${isLight ? "rgba(42,92,255,0.15)" : "rgba(255,255,255,0.25)"} !important;
+          background: ${isLightTheme ? "rgba(42,92,255,0.2)" : isLight ? "rgba(42,92,255,0.15)" : "rgba(255,255,255,0.25)"} !important;
         }
         @media (pointer: coarse) {
           body { cursor: auto !important; }

@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Save, Loader, Plus, Trash2, Image as ImageIcon, Video, Upload } from 'lucide-react';
 
 export default function SettingsPanel() {
@@ -7,6 +7,8 @@ export default function SettingsPanel() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const imageInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     fetch('/api/settings').then(r => r.json()).then(d => { setData(d || {}); setLoading(false); });
@@ -32,6 +34,72 @@ export default function SettingsPanel() {
   const addPartner = () =>
     setData((d: any) => ({ ...d, partnerLogos: [...(d.partnerLogos || []), { name: '', imageUrl: '', website: '' }] }));
 
+  const loadTechStackPreset = () => {
+    const tech = (name: string, iconSlug: string, website: string) => ({
+      name,
+      imageUrl: `https://cdn.simpleicons.org/${iconSlug}`,
+      website,
+    });
+    const techUrl = (name: string, imageUrl: string, website: string) => ({
+      name,
+      imageUrl,
+      website,
+    });
+
+    const preset = [
+      tech('Next.js', 'nextdotjs', 'https://nextjs.org'),
+      tech('React', 'react', 'https://react.dev'),
+      tech('TypeScript', 'typescript', 'https://www.typescriptlang.org'),
+      tech('JavaScript', 'javascript', 'https://developer.mozilla.org/docs/Web/JavaScript'),
+      tech('Tailwind CSS', 'tailwindcss', 'https://tailwindcss.com'),
+      tech('Sass', 'sass', 'https://sass-lang.com'),
+      tech('Framer Motion', 'framer', 'https://www.framer.com/motion'),
+      tech('GSAP', 'greensock', 'https://gsap.com'),
+      tech('Three.js', 'threedotjs', 'https://threejs.org'),
+      tech('Node.js', 'nodedotjs', 'https://nodejs.org'),
+      tech('Express', 'express', 'https://expressjs.com'),
+      tech('NestJS', 'nestjs', 'https://nestjs.com'),
+      tech('Python', 'python', 'https://python.org'),
+      tech('FastAPI', 'fastapi', 'https://fastapi.tiangolo.com'),
+      tech('GraphQL', 'graphql', 'https://graphql.org'),
+      tech('tRPC', 'trpc', 'https://trpc.io'),
+      tech('PostgreSQL', 'postgresql', 'https://postgresql.org'),
+      tech('MySQL', 'mysql', 'https://mysql.com'),
+      tech('MongoDB', 'mongodb', 'https://mongodb.com'),
+      tech('Redis', 'redis', 'https://redis.io'),
+      tech('Prisma', 'prisma', 'https://prisma.io'),
+      tech('Mongoose', 'mongoose', 'https://mongoosejs.com'),
+      tech('Docker', 'docker', 'https://docker.com'),
+      tech('Kubernetes', 'kubernetes', 'https://kubernetes.io'),
+      tech('Nginx', 'nginx', 'https://nginx.org'),
+      tech('Vercel', 'vercel', 'https://vercel.com'),
+      tech('Netlify', 'netlify', 'https://netlify.com'),
+      techUrl('AWS', 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/amazonwebservices/amazonwebservices-original-wordmark.svg', 'https://aws.amazon.com'),
+      tech('Cloudflare', 'cloudflare', 'https://cloudflare.com'),
+      tech('GitHub', 'github', 'https://github.com'),
+      tech('GitHub Actions', 'githubactions', 'https://docs.github.com/actions'),
+      tech('Jest', 'jest', 'https://jestjs.io'),
+      tech('Cypress', 'cypress', 'https://cypress.io'),
+      tech('Playwright', 'playwright', 'https://playwright.dev'),
+      tech('Storybook', 'storybook', 'https://storybook.js.org'),
+      tech('Webpack', 'webpack', 'https://webpack.js.org'),
+      tech('Vite', 'vite', 'https://vitejs.dev'),
+      tech('Turborepo', 'turborepo', 'https://turbo.build/repo'),
+      tech('Figma', 'figma', 'https://figma.com'),
+      techUrl('Adobe XD', 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/xd/xd-plain.svg', 'https://adobe.com/products/xd.html'),
+      techUrl('Illustrator', 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/illustrator/illustrator-plain.svg', 'https://adobe.com/products/illustrator.html'),
+      techUrl('Photoshop', 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/photoshop/photoshop-plain.svg', 'https://adobe.com/products/photoshop.html'),
+      techUrl('After Effects', 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/aftereffects/aftereffects-plain.svg', 'https://adobe.com/products/aftereffects.html'),
+      techUrl('Premiere Pro', 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/premierepro/premierepro-plain.svg', 'https://adobe.com/products/premiere.html'),
+      tech('Blender', 'blender', 'https://blender.org'),
+      tech('Spline', 'spline', 'https://spline.design'),
+      tech('Webflow', 'webflow', 'https://webflow.com'),
+      tech('Notion', 'notion', 'https://notion.so'),
+    ];
+
+    setData((d: any) => ({ ...d, partnerLogos: preset }));
+  };
+
   if (loading) return <div style={{ color: 'var(--text-faint)', fontFamily: 'var(--font-body)', padding: '2rem' }}>Loading…</div>;
 
   const partners: any[] = data.partnerLogos || [];
@@ -43,7 +111,7 @@ export default function SettingsPanel() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem' }}>
         <div>
           <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '1.75rem', color: 'var(--text)', fontWeight: 800 }}>Site Settings</h1>
-          <p style={{ fontFamily: 'var(--font-body)', color: 'var(--text-faint)', fontSize: '0.88rem', marginTop: '0.25rem' }}>Control global site content, logo, hero, contact info and partner logos.</p>
+          <p style={{ fontFamily: 'var(--font-body)', color: 'var(--text-faint)', fontSize: '0.88rem', marginTop: '0.25rem' }}>Control global site content, logo, hero, contact info and your technology stack marquee.</p>
         </div>
         <button className="admin-btn-save" onClick={save} disabled={saving} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           {saving ? <Loader size={15} style={{ animation: 'spin 1s linear infinite' }} /> : <Save size={15} />}
@@ -115,10 +183,15 @@ export default function SettingsPanel() {
             <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start', marginBottom: '1rem' }}>
               <div style={{ flex: 1 }}>
                 <input className="admin-input" style={{ marginBottom: '0.5rem' }} {...f('heroBackgroundImage')} placeholder="https://images.unsplash.com/... (paste URL)" />
-                <label style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem', background: 'var(--surface-high)', border: '1.5px solid var(--border-strong)', borderRadius: '0.5rem', cursor: 'none', fontFamily: 'var(--font-body)', fontSize: '0.82rem', color: 'var(--text-muted)', transition: 'border-color 0.2s' }}>
+                <button
+                  type="button"
+                  onClick={() => imageInputRef.current?.click()}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem', background: 'var(--surface-high)', border: '1.5px solid var(--border-strong)', borderRadius: '0.5rem', cursor: 'none', fontFamily: 'var(--font-body)', fontSize: '0.82rem', color: 'var(--text-muted)', transition: 'border-color 0.2s' }}
+                >
                   <Upload size={14} />
                   Upload image from device
-                  <input type="file" accept="image/*" style={{ display: 'none' }} onChange={async e => {
+                </button>
+                <input ref={imageInputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={async e => {
                     const file = e.target.files?.[0];
                     if (!file) return;
                     const form = new FormData();
@@ -127,8 +200,7 @@ export default function SettingsPanel() {
                     const { urls } = await res.json();
                     if (urls?.[0]) setData((d: any) => ({ ...d, heroBackgroundImage: urls[0] }));
                     e.target.value = '';
-                  }} />
-                </label>
+                }} />
               </div>
             </div>
             {data.heroBackgroundImage && (
@@ -139,10 +211,15 @@ export default function SettingsPanel() {
           <>
             <label className="admin-label">Hero Background Video</label>
             <input className="admin-input" style={{ marginBottom: '0.5rem' }} {...f('heroVideoUrl')} placeholder="Paste a direct .mp4 URL (e.g. from Cloudinary or your server)" />
-            <label style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem', background: 'var(--surface-high)', border: '1.5px solid var(--border-strong)', borderRadius: '0.5rem', cursor: 'none', fontFamily: 'var(--font-body)', fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
+            <button
+              type="button"
+              onClick={() => videoInputRef.current?.click()}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem', background: 'var(--surface-high)', border: '1.5px solid var(--border-strong)', borderRadius: '0.5rem', cursor: 'none', fontFamily: 'var(--font-body)', fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: '1rem' }}
+            >
               <Upload size={14} />
               Upload video from device
-              <input type="file" accept="video/*" style={{ display: 'none' }} onChange={async e => {
+            </button>
+            <input ref={videoInputRef} type="file" accept="video/*" style={{ display: 'none' }} onChange={async e => {
                 const file = e.target.files?.[0];
                 if (!file) return;
                 const form = new FormData();
@@ -152,8 +229,7 @@ export default function SettingsPanel() {
                 const { urls } = await res.json();
                 if (urls?.[0]) setData((d: any) => ({ ...d, heroVideoUrl: urls[0] }));
                 e.target.value = '';
-              }} />
-            </label>
+            }} />
             {data.heroVideoUrl && data.heroVideoUrl !== 'Uploading…' && (
               <video src={data.heroVideoUrl} controls muted style={{ width: '100%', height: 160, objectFit: 'cover', borderRadius: '0.75rem', border: '1px solid var(--border)', marginBottom: '1rem', background: '#000' }} />
             )}
@@ -172,21 +248,26 @@ export default function SettingsPanel() {
         <textarea className="admin-textarea" {...f('metaDescription')} placeholder="C Sharp is a premium tech agency…" style={{ minHeight: 70 }} />
       </div>
 
-      {/* Partner Logos */}
+      {/* Technology Stack Marquee */}
       <div className="admin-card">
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
           <div>
-            <p className="admin-card-title" style={{ marginBottom: '0.25rem' }}>Partner / Client Logos</p>
-            <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.8rem', color: 'var(--text-faint)' }}>These appear in the "Trusted by" marquee on the homepage. Use SVG or PNG URLs for best quality.</p>
+            <p className="admin-card-title" style={{ marginBottom: '0.25rem' }}>Technology Stack Marquee</p>
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.8rem', color: 'var(--text-faint)' }}>These appear in the "Technologies we use" marquee on the homepage. Add names only, or include logo URLs for visual marks.</p>
           </div>
-          <button className="admin-btn-save" onClick={addPartner} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.82rem', flexShrink: 0 }}>
-            <Plus size={14} /> Add Logo
-          </button>
+          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexShrink: 0 }}>
+            <button className="admin-btn-ghost" onClick={loadTechStackPreset} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.82rem' }}>
+              Load modern stack
+            </button>
+            <button className="admin-btn-save" onClick={addPartner} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.82rem' }}>
+              <Plus size={14} /> Add Item
+            </button>
+          </div>
         </div>
 
         {partners.length === 0 && (
           <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.85rem', color: 'var(--text-faint)', padding: '1.5rem', textAlign: 'center', border: '1px dashed var(--border)', borderRadius: '0.75rem' }}>
-            No partner logos yet. Click "Add Logo" to get started.
+            No technology items yet. Click "Load modern stack" or "Add Item" to get started.
           </p>
         )}
 
@@ -207,14 +288,14 @@ export default function SettingsPanel() {
                   style={{ marginBottom: 0 }}
                   value={p.name || ''}
                   onChange={e => updatePartner(i, 'name', e.target.value)}
-                  placeholder="Company name"
+                  placeholder="Technology or tool name"
                 />
                 <input
                   className="admin-input"
                   style={{ marginBottom: 0 }}
                   value={p.website || ''}
                   onChange={e => updatePartner(i, 'website', e.target.value)}
-                  placeholder="https://company.com (optional link)"
+                  placeholder="https://tool-website.com (optional link)"
                 />
               </div>
               <input
@@ -222,7 +303,7 @@ export default function SettingsPanel() {
                 style={{ marginBottom: 0 }}
                 value={p.imageUrl || ''}
                 onChange={e => updatePartner(i, 'imageUrl', e.target.value)}
-                placeholder="https://... logo image URL (SVG or PNG)"
+                placeholder="https://... logo image URL (optional SVG/PNG)"
               />
               <button className="admin-btn-danger" onClick={() => removePartner(i)} style={{ padding: '0.5rem', flexShrink: 0 }}>
                 <Trash2 size={14} />

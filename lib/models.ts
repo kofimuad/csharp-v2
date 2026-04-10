@@ -168,3 +168,18 @@ const ContactSubmissionSchema = new Schema<IContactSubmission>({
   read: { type: Boolean, default: false },
 }, { timestamps: true });
 export const ContactSubmission: Model<IContactSubmission> = mongoose.models.ContactSubmission || mongoose.model<IContactSubmission>('ContactSubmission', ContactSubmissionSchema);
+
+/* ── Uploads (binary media stored in MongoDB) ── */
+export interface IUpload {
+  filename: string;
+  contentType: string;
+  size: number;
+  data: Buffer;
+}
+const UploadSchema = new Schema<IUpload>({
+  filename: { type: String, required: true },
+  contentType: { type: String, required: true },
+  size: { type: Number, required: true },
+  data: { type: Buffer, required: true },
+}, { timestamps: true });
+export const Upload: Model<IUpload> = mongoose.models.Upload || mongoose.model<IUpload>('Upload', UploadSchema);

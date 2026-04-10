@@ -7,6 +7,7 @@ import ProjectDetail from './ProjectDetail';
 
 interface HMProjectGridProps {
   projects: any[];
+  showHeader?: boolean;
   showViewAll?: boolean;
   maxItems?: number;
 }
@@ -115,12 +116,12 @@ function HMCard({ project, index, onClick }: { project: any; index: number; onCl
       <div ref={cardRef} className="hm-card" onClick={onClick}>
         <div className="hm-card-img">
           {/* Inner wrapper handles the magnetic transform; outer clips overflow */}
-          <div ref={imgRef} style={{ width: '100%', height: '100%', transform: 'translate(0,0) scale(1.02)', transition: 'transform 0s', willChange: 'transform' }}>
+          <div ref={imgRef} style={{ width: '100%', height: 'auto', transform: 'translate(0,0) scale(1.02)', transition: 'transform 0s', willChange: 'transform' }}>
             <img
               src={project.image || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&q=80'}
               alt={project.title}
               loading="lazy"
-              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+              style={{ width: '100%', height: 'auto', objectFit: 'contain', display: 'block' }}
             />
           </div>
         </div>

@@ -6,6 +6,43 @@ const CATEGORIES = ['web', 'mobile', 'design', 'consulting', 'other'];
 
 interface MediaItem { type: 'image' | 'video'; url: string; caption?: string; localPreview?: string; }
 
+function ProjectFields({ d, setD }: { d: any; setD: (fn: any) => void }) {
+  return (
+    <>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
+        <div><label className="admin-label">Title *</label><input className="admin-input" value={d.title || ''} onChange={e => setD((p: any) => ({ ...p, title: e.target.value }))} placeholder="Project name" /></div>
+        <div>
+          <label className="admin-label">Category</label>
+          <select className="admin-select" value={d.category || 'web'} onChange={e => setD((p: any) => ({ ...p, category: e.target.value }))}>
+            {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+          </select>
+        </div>
+        <div><label className="admin-label">Year</label><input className="admin-input" value={d.year || ''} onChange={e => setD((p: any) => ({ ...p, year: e.target.value }))} placeholder="2025" /></div>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+        <div><label className="admin-label">Tags (comma-separated)</label><input className="admin-input" value={d.tags || ''} onChange={e => setD((p: any) => ({ ...p, tags: e.target.value }))} placeholder="Web, Fintech" /></div>
+        <div><label className="admin-label">Client</label><input className="admin-input" value={d.client || ''} onChange={e => setD((p: any) => ({ ...p, client: e.target.value }))} placeholder="Acme Corp" /></div>
+      </div>
+      <label className="admin-label">Deliverables (comma-separated)</label>
+      <input className="admin-input" value={d.deliverables || ''} onChange={e => setD((p: any) => ({ ...p, deliverables: e.target.value }))} placeholder="Design, Development, Strategy" />
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+        <div><label className="admin-label">The Challenge</label><textarea className="admin-textarea" style={{ minHeight: 80 }} value={d.problem || ''} onChange={e => setD((p: any) => ({ ...p, problem: e.target.value }))} /></div>
+        <div><label className="admin-label">Our Solution</label><textarea className="admin-textarea" style={{ minHeight: 80 }} value={d.solution || ''} onChange={e => setD((p: any) => ({ ...p, solution: e.target.value }))} /></div>
+      </div>
+      <label className="admin-label">Tech Stack (comma-separated)</label>
+      <input className="admin-input" value={d.stack || ''} onChange={e => setD((p: any) => ({ ...p, stack: e.target.value }))} placeholder="React, Node.js, MongoDB" />
+      <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', marginTop: '0.25rem' }}>
+        <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'none', fontFamily: 'var(--font-body)', fontSize: '0.88rem', color: 'var(--text-muted)' }}>
+          <input type="checkbox" checked={!!d.featured} onChange={e => setD((p: any) => ({ ...p, featured: e.target.checked }))} /> Featured on homepage
+        </label>
+        <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'none', fontFamily: 'var(--font-body)', fontSize: '0.88rem', color: 'var(--text-muted)' }}>
+          <input type="checkbox" checked={d.visible !== false} onChange={e => setD((p: any) => ({ ...p, visible: e.target.checked }))} /> Visible
+        </label>
+      </div>
+    </>
+  );
+}
+
 // ── Drag-to-reorder media grid ──
 function MediaGrid({ items, onChange }: { items: MediaItem[]; onChange: (items: MediaItem[]) => void }) {
   const dragIdx = useRef<number | null>(null);
@@ -51,7 +88,7 @@ function MediaGrid({ items, onChange }: { items: MediaItem[]; onChange: (items: 
 }
 
 // ── Upload zone with URL fallback ──
-function MediaUploader({ items, onChange }: { items: MediaItem[]; onChange: (items: MediaItem[]) => void }) {
+function MediaUploader({ items, onChange }: { items: MediaItem[]; onChange: React.Dispatch<React.SetStateAction<MediaItem[]>> }) {
   const [urlInput, setUrlInput] = useState('');
   const [uploading, setUploading] = useState(false);
   const [drag, setDrag] = useState(false);
@@ -67,7 +104,7 @@ function MediaUploader({ items, onChange }: { items: MediaItem[]; onChange: (ite
       url: '',
       localPreview: URL.createObjectURL(f),
     }));
-    onChange([...items, ...previews]);
+    onChange(prev => [...prev, ...previews]);
 
     // Upload to server
     const form = new FormData();
@@ -90,7 +127,7 @@ function MediaUploader({ items, onChange }: { items: MediaItem[]; onChange: (ite
       console.error('Upload failed');
     }
     setUploading(false);
-  }, [items, onChange]);
+  }, [onChange]);
 
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -108,7 +145,7 @@ function MediaUploader({ items, onChange }: { items: MediaItem[]; onChange: (ite
     const u = urlInput.trim();
     if (!u) return;
     const isVideo = /\.(mp4|webm|mov|ogg)(\?|$)/i.test(u);
-    onChange([...items, { type: isVideo ? 'video' : 'image', url: u }]);
+    onChange(prev => [...prev, { type: isVideo ? 'video' : 'image', url: u }]);
     setUrlInput('');
   };
 
@@ -240,41 +277,6 @@ export default function PortfolioPanel() {
     setEditMedia(media);
   };
 
-  const F = ({ d, setD }: { d: any; setD: (fn: any) => void }) => (
-    <>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
-        <div><label className="admin-label">Title *</label><input className="admin-input" value={d.title || ''} onChange={e => setD((p: any) => ({ ...p, title: e.target.value }))} placeholder="Project name" /></div>
-        <div>
-          <label className="admin-label">Category</label>
-          <select className="admin-select" value={d.category || 'web'} onChange={e => setD((p: any) => ({ ...p, category: e.target.value }))}>
-            {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-          </select>
-        </div>
-        <div><label className="admin-label">Year</label><input className="admin-input" value={d.year || ''} onChange={e => setD((p: any) => ({ ...p, year: e.target.value }))} placeholder="2025" /></div>
-      </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-        <div><label className="admin-label">Tags (comma-separated)</label><input className="admin-input" value={d.tags || ''} onChange={e => setD((p: any) => ({ ...p, tags: e.target.value }))} placeholder="Web, Fintech" /></div>
-        <div><label className="admin-label">Client</label><input className="admin-input" value={d.client || ''} onChange={e => setD((p: any) => ({ ...p, client: e.target.value }))} placeholder="Acme Corp" /></div>
-      </div>
-      <label className="admin-label">Deliverables (comma-separated)</label>
-      <input className="admin-input" value={d.deliverables || ''} onChange={e => setD((p: any) => ({ ...p, deliverables: e.target.value }))} placeholder="Design, Development, Strategy" />
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-        <div><label className="admin-label">The Challenge</label><textarea className="admin-textarea" style={{ minHeight: 80 }} value={d.problem || ''} onChange={e => setD((p: any) => ({ ...p, problem: e.target.value }))} /></div>
-        <div><label className="admin-label">Our Solution</label><textarea className="admin-textarea" style={{ minHeight: 80 }} value={d.solution || ''} onChange={e => setD((p: any) => ({ ...p, solution: e.target.value }))} /></div>
-      </div>
-      <label className="admin-label">Tech Stack (comma-separated)</label>
-      <input className="admin-input" value={d.stack || ''} onChange={e => setD((p: any) => ({ ...p, stack: e.target.value }))} placeholder="React, Node.js, MongoDB" />
-      <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', marginTop: '0.25rem' }}>
-        <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'none', fontFamily: 'var(--font-body)', fontSize: '0.88rem', color: 'var(--text-muted)' }}>
-          <input type="checkbox" checked={!!d.featured} onChange={e => setD((p: any) => ({ ...p, featured: e.target.checked }))} /> Featured on homepage
-        </label>
-        <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'none', fontFamily: 'var(--font-body)', fontSize: '0.88rem', color: 'var(--text-muted)' }}>
-          <input type="checkbox" checked={d.visible !== false} onChange={e => setD((p: any) => ({ ...p, visible: e.target.checked }))} /> Visible
-        </label>
-      </div>
-    </>
-  );
-
   if (loading) return <div style={{ color: 'var(--text-faint)', fontFamily: 'var(--font-body)', padding: '2rem' }}>Loading…</div>;
 
   return (
@@ -292,7 +294,7 @@ export default function PortfolioPanel() {
       {showNew && (
         <div className="admin-card" style={{ borderColor: 'var(--primary)' }}>
           <p className="admin-card-title">New Project</p>
-          <F d={newData} setD={setNewData} />
+          <ProjectFields d={newData} setD={setNewData} />
           <div style={{ marginTop: '1.25rem' }}>
             <MediaUploader items={newMedia} onChange={setNewMedia} />
           </div>
@@ -310,7 +312,7 @@ export default function PortfolioPanel() {
           {editId === p._id ? (
             <>
               <p className="admin-card-title">Editing: {p.title}</p>
-              <F d={editData} setD={setEditData} />
+              <ProjectFields d={editData} setD={setEditData} />
               <div style={{ marginTop: '1.25rem' }}>
                 <MediaUploader items={editMedia} onChange={setEditMedia} />
               </div>

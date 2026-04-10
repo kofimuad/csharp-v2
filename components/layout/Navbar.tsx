@@ -5,19 +5,25 @@ import { usePathname } from 'next/navigation';
 import { Sun, Moon, Menu, X } from 'lucide-react';
 import { useTheme } from '@/components/ThemeProvider';
 
-const navLinks = [
-  { href: '/', label: 'Work' },
-  { href: '/services', label: 'Services' },
-  { href: '/about', label: 'About' },
-  { href: '/contact', label: 'Contact' },
-];
-
 export default function Navbar({ logoUrl, logoText }: { logoUrl?: string; logoText?: string }) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
   const { theme, toggle } = useTheme();
   const isLight = theme === 'light';
+  const onPortfolio = pathname.startsWith('/portfolio');
+  const navLinks = [
+    { href: onPortfolio ? '/portfolio' : '/', label: onPortfolio ? 'Work' : 'Home' },
+    { href: '/services', label: 'Services' },
+    { href: '/about', label: 'About' },
+    { href: '/contact', label: 'Contact' },
+  ];
+
+  // Keep the homepage hero navbar high-contrast until the page is scrolled.
+  const navOnHero = pathname === '/' && !scrolled;
+  const navTextColor = navOnHero ? 'rgba(255,255,255,0.95)' : 'var(--text)';
+  const navMutedColor = navOnHero ? 'rgba(255,255,255,0.72)' : 'var(--text-muted)';
+  const navBorderColor = navOnHero ? 'rgba(255,255,255,0.34)' : 'var(--border-strong)';
 
   useEffect(() => {
     const fn = () => {
@@ -47,8 +53,8 @@ export default function Navbar({ logoUrl, logoText }: { logoUrl?: string; logoTe
               width: 'auto',
               objectFit: 'contain',
               maxWidth: 160,
-              // In light mode, if logo is white/light, invert to make it dark
-              filter: isLight ? 'brightness(0)' : 'brightness(1)',
+              // Keep logo visible over transparent hero, then revert to theme-appropriate contrast once scrolled.
+              filter: navOnHero ? 'brightness(0) invert(1)' : isLight ? 'brightness(0)' : 'brightness(1)',
               transition: 'filter 0.3s ease',
             }}
           />
@@ -64,7 +70,7 @@ export default function Navbar({ logoUrl, logoText }: { logoUrl?: string; logoTe
           fontFamily: 'var(--font-display)',
           fontWeight: 900,
           fontSize: '1.5rem',
-          color: 'var(--text)',
+          color: navTextColor,
           textDecoration: 'none',
           letterSpacing: '-0.04em',
           transition: 'color 0.3s ease',
@@ -89,7 +95,7 @@ export default function Navbar({ logoUrl, logoText }: { logoUrl?: string; logoTe
                   fontFamily: 'var(--font-body)',
                   fontSize: '0.875rem',
                   fontWeight: 500,
-                  color: pathname === link.href ? 'var(--text)' : 'var(--text-muted)',
+                  color: pathname === link.href ? navTextColor : navMutedColor,
                   textDecoration: 'none',
                   letterSpacing: '0.02em',
                   transition: 'color 0.2s',
@@ -115,10 +121,10 @@ export default function Navbar({ logoUrl, logoText }: { logoUrl?: string; logoTe
             style={{
               width: 38,
               height: 38,
-              border: '1.5px solid var(--border-strong)',
+              border: `1.5px solid ${navBorderColor}`,
               borderRadius: '0.5rem',
               background: 'transparent',
-              color: 'var(--text)',
+              color: navTextColor,
               cursor: 'none',
               display: 'none',
               alignItems: 'center',
@@ -159,16 +165,16 @@ export default function Navbar({ logoUrl, logoText }: { logoUrl?: string; logoTe
       <style>{`
         .theme-toggle-btn {
           width: 38px; height: 38px; border-radius: 50%;
-          border: 1.5px solid var(--border-strong);
+          border: 1.5px solid ${navBorderColor};
           background: transparent;
-          color: var(--text-muted);
+          color: ${navMutedColor};
           cursor: none;
           display: flex; align-items: center; justify-content: center;
           transition: all 0.2s;
         }
         .theme-toggle-btn:hover {
-          color: var(--text);
-          border-color: var(--text);
+          color: ${navTextColor};
+          border-color: ${navTextColor};
           background: var(--surface-high);
         }
         @media (max-width: 768px) {

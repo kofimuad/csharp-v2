@@ -16,8 +16,39 @@ export default function HomePage({ settings, projects, services, testimonials }:
   ];
 
   const partnerLogos: any[] = settings?.partnerLogos || [];
-  const logoTextFallback = ['GOOGLE', 'META', 'APPLE', 'NETFLIX', 'ADOBE', 'NIKE', 'STRIPE', 'NOTION'];
-  const doubled = partnerLogos.length > 0 ? [...partnerLogos, ...partnerLogos] : null;
+  const techLogos = partnerLogos.length > 0 ? partnerLogos : [
+    { name: 'Next.js' }, { name: 'React' }, { name: 'TypeScript' }, { name: 'JavaScript' }, { name: 'Tailwind CSS' }, { name: 'Sass' },
+    { name: 'Framer Motion' }, { name: 'GSAP' }, { name: 'Three.js' }, { name: 'WebGL' }, { name: 'Node.js' }, { name: 'Express' },
+    { name: 'NestJS' }, { name: 'Python' }, { name: 'FastAPI' }, { name: 'GraphQL' }, { name: 'REST API' }, { name: 'tRPC' },
+    { name: 'PostgreSQL' }, { name: 'MySQL' }, { name: 'MongoDB' }, { name: 'Redis' }, { name: 'Prisma' }, { name: 'Mongoose' },
+    { name: 'Docker' }, { name: 'Kubernetes' }, { name: 'Nginx' }, { name: 'Vercel' }, { name: 'Netlify' }, { name: 'AWS' },
+    { name: 'Cloudflare' }, { name: 'GitHub' }, { name: 'GitHub Actions' }, { name: 'Jest' }, { name: 'Cypress' }, { name: 'Playwright' },
+    { name: 'Storybook' }, { name: 'Webpack' }, { name: 'Vite' }, { name: 'Turborepo' }, { name: 'Figma' }, { name: 'Adobe XD' },
+    { name: 'Illustrator' }, { name: 'Photoshop' }, { name: 'After Effects' }, { name: 'Premiere Pro' }, { name: 'Blender' }, { name: 'Spline' },
+    { name: 'Webflow' }, { name: 'Notion' },
+  ];
+
+  const techLane = (lane: any[], laneIndex: number) => (
+    <div className="logos-group" aria-hidden={laneIndex === 1}>
+      {lane.map((logo: any, i: number) => (
+        <a
+          key={`${laneIndex}-${i}`}
+          href={logo.website || '#'}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ display: 'flex', alignItems: 'center', flexShrink: 0, textDecoration: 'none' }}
+          title={logo.name}
+          tabIndex={laneIndex === 1 ? -1 : 0}
+        >
+          {logo.imageUrl ? (
+            <img src={logo.imageUrl} alt={logo.name} className="logo-item-img" />
+          ) : (
+            <span className="logo-item">{logo.name}</span>
+          )}
+        </a>
+      ))}
+    </div>
+  );
 
   return (
     <>
@@ -120,20 +151,11 @@ export default function HomePage({ settings, projects, services, testimonials }:
 
       {/* ── Partner Logos ── */}
       <section className="logos-section">
-        <p className="logos-label">Trusted by</p>
+        <p className="logos-label">Technologies we use</p>
         <div className="logos-marquee">
           <div className="logos-track">
-            {doubled ? doubled.map((logo: any, i: number) => (
-              <a key={i} href={logo.website || '#'} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', flexShrink: 0, textDecoration: 'none' }} title={logo.name}>
-                {logo.imageUrl ? (
-                  <img src={logo.imageUrl} alt={logo.name} className="logo-item-img" />
-                ) : (
-                  <span className="logo-item">{logo.name}</span>
-                )}
-              </a>
-            )) : [...logoTextFallback, ...logoTextFallback].map((l, i) => (
-              <span key={i} className="logo-item">{l}</span>
-            ))}
+            {techLane(techLogos, 0)}
+            {techLane(techLogos, 1)}
           </div>
         </div>
       </section>
