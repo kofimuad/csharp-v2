@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Monitor, Smartphone, Layers, BarChart3, Settings2, ArrowRight, Plus, Code, Globe, Palette, Database, Shield, Zap, Users } from 'lucide-react';
 import RevealOnScroll from '@/components/ui/RevealOnScroll';
@@ -9,9 +9,13 @@ const ICON_MAP: Record<string, any> = {
   Monitor, Smartphone, Layers, BarChart3, Settings2, Code, Globe, Palette, Database, Shield, Zap, Users,
 };
 
-export default function ServicesContent({ services }: { services: any[] }) {
-  const [openIdx, setOpenIdx] = useState<number | null>(0);
+export default function ServicesContent({ services, initialOpenIndex = 0 }: { services: any[]; initialOpenIndex?: number }) {
+  const [openIdx, setOpenIdx] = useState<number | null>(initialOpenIndex);
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
+
+  useEffect(() => {
+    setOpenIdx(initialOpenIndex);
+  }, [initialOpenIndex]);
 
   return (
     <>

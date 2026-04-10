@@ -20,11 +20,29 @@ async function getData() {
   } catch { return { settings: null, services: [] }; }
 }
 
-export default async function ServicesPage() {
+function findInitialOpenIndex(services: any[], selectedService?: string | string[]) {
+  const target = Array.isArray(selectedService) ? selectedService[0] : selectedService;
+  if (!target) return 0;
+
+  const indexById = services.findIndex(service => String(service._id) === target);
+  if (indexById >= 0) return indexById;
+
+  const normalizedTarget = target.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+  const indexByTitle = services.findIndex(service =>
+    String(service.title || '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-') === normalizedTarget,
+  );
+
+  return indexByTitle >= 0 ? indexByTitle : 0;
+}
+
+export default async function ServicesPage({ searchParams }: { searchParams?: { service?: string | string[] } }) {
   const { settings, services } = await getData();
+  const initialOpenIndex = findInitialOpenIndex(services, searchParams?.service);
   return (
     <SiteLayout settings={settings as any}>
-      <ServicesContent services={services} />
+      <ServicesContent services={services} initialOpenIndex={initialOpenIndex} />
     </SiteLayout>
   );
 }

@@ -67,7 +67,7 @@ export default function HomePage({ settings, projects, services, testimonials }:
             </div>
             <div className="service-list">
               {services.map((s: any, i: number) => (
-                <Link key={s._id} href="/services" className="service-item" style={{ textDecoration: 'none' }}>
+                <Link key={s._id} href={`/services?service=${encodeURIComponent(s._id)}`} className="service-item" style={{ textDecoration: 'none' }}>
                   <div className="service-left">
                     <span className="service-num">0{i + 1}</span>
                     <span className="service-name">{s.title}</span>
