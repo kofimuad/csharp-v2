@@ -515,9 +515,25 @@ footer { background: var(--surface); border-top: 1px solid var(--border); paddin
 /* ── HM Featured Grid (homepage) ── */
 .hm-featured-section { padding: 6rem 0 4rem; background: var(--bg); }
 .hm-featured-header { max-width: 1400px; margin: 0 auto; padding: 0 3rem 3rem; display: flex; align-items: flex-end; justify-content: space-between; }
+.hm-featured-header .btn-outline {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
 .hm-featured-grid { max-width: 1400px; margin: 0 auto; padding: 0 3rem; display: grid; grid-template-columns: 1fr 1fr 1fr; column-gap: 2.5rem; row-gap: 0; }
 @media (max-width: 900px) { .hm-featured-grid { grid-template-columns: 1fr 1fr; } .hm-featured-header { padding: 0 1.5rem 2rem; } }
 @media (max-width: 600px) { .hm-featured-grid { grid-template-columns: 1fr; } }
+
+@media (max-width: 768px) {
+  .hm-featured-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .hm-featured-header .btn-outline {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.85rem;
+  }
+}
 
 /* ── Media upload in admin ── */
 .media-upload-zone {
