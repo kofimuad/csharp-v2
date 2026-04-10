@@ -6,6 +6,8 @@ import { SiteSettings, Project, Service, Testimonial } from '@/lib/models';
 import { seedDatabase } from '@/lib/seed';
 import { serialize, serializeArray } from '@/lib/serialize';
 
+export const dynamic = 'force-dynamic';
+
 async function getData() {
   try {
     await connectDB();

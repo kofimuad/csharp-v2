@@ -5,6 +5,8 @@ import { seedDatabase } from '@/lib/seed';
 import PortfolioContent from '@/components/sections/PortfolioContent';
 import { serialize, serializeArray } from '@/lib/serialize';
 
+export const dynamic = 'force-dynamic';
+
 async function getData() {
   try {
     await connectDB();

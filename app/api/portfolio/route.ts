@@ -3,6 +3,8 @@ import connectDB from '@/lib/mongodb';
 import { Project } from '@/lib/models';
 import { seedDatabase } from '@/lib/seed';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     await connectDB();
