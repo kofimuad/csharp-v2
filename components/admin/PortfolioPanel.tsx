@@ -9,7 +9,18 @@ interface MediaItem { type: 'image' | 'video'; url: string; caption?: string; lo
 function ProjectFields({ d, setD }: { d: any; setD: (fn: any) => void }) {
   return (
     <>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
+      <style>{`
+        .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+        .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        @media (max-width: 1024px) {
+          .form-grid-3 { grid-template-columns: 1fr 1fr; }
+          .form-grid-2 { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 768px) {
+          .form-grid-3, .form-grid-2 { grid-template-columns: 1fr; }
+        }
+      `}</style>
+      <div className="form-grid-3">
         <div><label className="admin-label">Title *</label><input className="admin-input" value={d.title || ''} onChange={e => setD((p: any) => ({ ...p, title: e.target.value }))} placeholder="Project name" /></div>
         <div>
           <label className="admin-label">Category</label>
@@ -19,19 +30,19 @@ function ProjectFields({ d, setD }: { d: any; setD: (fn: any) => void }) {
         </div>
         <div><label className="admin-label">Year</label><input className="admin-input" value={d.year || ''} onChange={e => setD((p: any) => ({ ...p, year: e.target.value }))} placeholder="2025" /></div>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+      <div className="form-grid-2">
         <div><label className="admin-label">Tags (comma-separated)</label><input className="admin-input" value={d.tags || ''} onChange={e => setD((p: any) => ({ ...p, tags: e.target.value }))} placeholder="Web, Fintech" /></div>
         <div><label className="admin-label">Client</label><input className="admin-input" value={d.client || ''} onChange={e => setD((p: any) => ({ ...p, client: e.target.value }))} placeholder="Acme Corp" /></div>
       </div>
       <label className="admin-label">Deliverables (comma-separated)</label>
       <input className="admin-input" value={d.deliverables || ''} onChange={e => setD((p: any) => ({ ...p, deliverables: e.target.value }))} placeholder="Design, Development, Strategy" />
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+      <div className="form-grid-2">
         <div><label className="admin-label">The Challenge</label><textarea className="admin-textarea" style={{ minHeight: 80 }} value={d.problem || ''} onChange={e => setD((p: any) => ({ ...p, problem: e.target.value }))} /></div>
         <div><label className="admin-label">Our Solution</label><textarea className="admin-textarea" style={{ minHeight: 80 }} value={d.solution || ''} onChange={e => setD((p: any) => ({ ...p, solution: e.target.value }))} /></div>
       </div>
       <label className="admin-label">Tech Stack (comma-separated)</label>
       <input className="admin-input" value={d.stack || ''} onChange={e => setD((p: any) => ({ ...p, stack: e.target.value }))} placeholder="React, Node.js, MongoDB" />
-      <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', marginTop: '0.25rem' }}>
+      <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center', marginTop: '0.25rem', flexWrap: 'wrap' }}>
         <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'none', fontFamily: 'var(--font-body)', fontSize: '0.88rem', color: 'var(--text-muted)' }}>
           <input type="checkbox" checked={!!d.featured} onChange={e => setD((p: any) => ({ ...p, featured: e.target.checked }))} /> Featured on homepage
         </label>

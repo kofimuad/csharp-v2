@@ -41,12 +41,21 @@ export default function ServicesPanel() {
 
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem' }}>
+      <style>{`
+        .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        @media (max-width: 1024px) {
+          .form-grid-2 { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 768px) {
+          .form-grid-2 { grid-template-columns: 1fr; }
+        }
+      `}</style>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '1.75rem', color: 'var(--text)', fontWeight: 800 }}>Services</h1>
           <p style={{ fontFamily: 'var(--font-body)', color: 'var(--text-faint)', fontSize: '0.88rem', marginTop: '0.25rem' }}>{services.length} services configured.</p>
         </div>
-        <button className="admin-btn-save" onClick={() => setShowNew(v => !v)} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <button className="admin-btn-save" onClick={() => setShowNew(v => !v)} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', minHeight: '44px' }}>
           <Plus size={15} /> Add Service
         </button>
       </div>
@@ -54,7 +63,7 @@ export default function ServicesPanel() {
       {showNew && (
         <div className="admin-card" style={{ borderColor: 'var(--primary)' }}>
           <p className="admin-card-title">New Service</p>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+          <div className="form-grid-2">
             <div>
               <label className="admin-label">Title *</label>
               <input className="admin-input" value={newData.title} onChange={e => setNewData(d => ({ ...d, title: e.target.value }))} placeholder="Service name" />
@@ -68,12 +77,12 @@ export default function ServicesPanel() {
           </div>
           <label className="admin-label">Description *</label>
           <textarea className="admin-textarea" value={newData.description} onChange={e => setNewData(d => ({ ...d, description: e.target.value }))} placeholder="Describe this service…" />
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+          <div className="form-grid-2">
             <div><label className="admin-label">Link (optional)</label><input className="admin-input" value={newData.link} onChange={e => setNewData(d => ({ ...d, link: e.target.value }))} placeholder="/portfolio" /></div>
             <div><label className="admin-label">Link Label</label><input className="admin-input" value={newData.linkLabel} onChange={e => setNewData(d => ({ ...d, linkLabel: e.target.value }))} placeholder="View case study" /></div>
           </div>
-          <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem' }}>
-            <button className="admin-btn-save" onClick={create} disabled={saving === 'new'} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
+            <button className="admin-btn-save" onClick={create} disabled={saving === 'new'} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', minHeight: '44px' }}>
               {saving === 'new' ? <Loader size={14} style={{ animation: 'spin 1s linear infinite' }} /> : <Plus size={14} />} Create
             </button>
             <button className="admin-btn-ghost" onClick={() => setShowNew(false)}>Cancel</button>
@@ -86,7 +95,7 @@ export default function ServicesPanel() {
           {editId === s._id ? (
             <>
               <p className="admin-card-title">Editing: {s.title}</p>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div className="form-grid-2">
                 <div><label className="admin-label">Title</label><input className="admin-input" value={editData.title} onChange={e => setEditData((d: any) => ({ ...d, title: e.target.value }))} /></div>
                 <div>
                   <label className="admin-label">Icon</label>
@@ -97,28 +106,28 @@ export default function ServicesPanel() {
               </div>
               <label className="admin-label">Description</label>
               <textarea className="admin-textarea" value={editData.description} onChange={e => setEditData((d: any) => ({ ...d, description: e.target.value }))} />
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div className="form-grid-2">
                 <div><label className="admin-label">Link</label><input className="admin-input" value={editData.link || ''} onChange={e => setEditData((d: any) => ({ ...d, link: e.target.value }))} /></div>
                 <div><label className="admin-label">Link Label</label><input className="admin-input" value={editData.linkLabel || ''} onChange={e => setEditData((d: any) => ({ ...d, linkLabel: e.target.value }))} /></div>
               </div>
-              <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem' }}>
-                <button className="admin-btn-save" onClick={() => saveEdit(s._id)} disabled={saving === s._id} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
+                <button className="admin-btn-save" onClick={() => saveEdit(s._id)} disabled={saving === s._id} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', minHeight: '44px' }}>
                   {saving === s._id ? <Loader size={14} style={{ animation: 'spin 1s linear infinite' }} /> : <Save size={14} />} Save
                 </button>
                 <button className="admin-btn-ghost" onClick={() => setEditId(null)}>Cancel</button>
               </div>
             </>
           ) : (
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
-              <div style={{ flex: 1 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.4rem' }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem', flexWrap: 'wrap' }}>
+              <div style={{ flex: 1, minWidth: 200 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.4rem', flexWrap: 'wrap' }}>
                   <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.72rem', color: 'var(--text-faint)', letterSpacing: '0.1em' }}>0{i+1}</span>
                   <span style={{ fontFamily: 'var(--font-display)', fontSize: '1.1rem', fontWeight: 700, color: 'var(--text)' }}>{s.title}</span>
                   <span className={`admin-badge ${s.visible ? 'admin-badge-green' : 'admin-badge-red'}`}>{s.visible ? 'Visible' : 'Hidden'}</span>
                 </div>
                 <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.88rem', color: 'var(--text-faint)', lineHeight: 1.6, maxWidth: 600 }}>{s.description}</p>
               </div>
-              <div style={{ display: 'flex', gap: '0.5rem', flexShrink: 0 }}>
+              <div style={{ display: 'flex', gap: '0.5rem', flexShrink: 0, flexWrap: 'wrap' }}>
                 <button className="admin-btn-ghost" onClick={() => startEdit(s)}>Edit</button>
                 <button className="admin-btn-ghost" onClick={() => fetch(`/api/services/${s._id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ visible: !s.visible }) }).then(() => load())} title={s.visible ? 'Hide' : 'Show'}>
                   {s.visible ? <EyeOff size={14} /> : <Eye size={14} />}

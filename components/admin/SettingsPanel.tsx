@@ -7,11 +7,16 @@ export default function SettingsPanel() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [heroMode, setHeroMode] = useState<'image' | 'video'>('image');
   const imageInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    fetch('/api/settings').then(r => r.json()).then(d => { setData(d || {}); setLoading(false); });
+    fetch('/api/settings').then(r => r.json()).then(d => {
+      setData(d || {});
+      setHeroMode(d?.heroVideoUrl ? 'video' : 'image');
+      setLoading(false);
+    });
   }, []);
 
   const save = async () => {
@@ -103,17 +108,37 @@ export default function SettingsPanel() {
   if (loading) return <div style={{ color: 'var(--text-faint)', fontFamily: 'var(--font-body)', padding: '2rem' }}>Loading…</div>;
 
   const partners: any[] = data.partnerLogos || [];
-  const heroMode = data.heroVideoUrl ? 'video' : 'image';
 
   return (
     <div>
+      <style>{`
+        .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .partner-grid { display: grid; grid-template-columns: 80px 1fr 1fr auto; gap: 0.75rem; align-items: center; }
+        .marquee-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; gap: 0.75rem; }
+        .marquee-actions { display: flex; gap: 0.5rem; align-items: center; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
+        @media (max-width: 1024px) {
+          .form-grid-2 { grid-template-columns: 1fr 1fr; }
+          .partner-grid { grid-template-columns: 80px 1fr auto; }
+        }
+        @media (max-width: 768px) {
+          .form-grid-2 { grid-template-columns: 1fr; }
+          .marquee-head { flex-direction: column; align-items: stretch; }
+          .marquee-actions { width: 100%; justify-content: stretch; }
+          .marquee-actions > button { flex: 1 1 0; min-width: 0; justify-content: center; }
+          .partner-grid { grid-template-columns: 1fr; }
+          .partner-grid > div:nth-child(2) { grid-column: 1; order: 1; }
+          .partner-grid > div:nth-child(3) { grid-column: 1; order: 3; display: none; }
+          .partner-grid > button { grid-column: 1; order: 4; }
+          .partner-grid > div:nth-child(1) { grid-column: 1; order: 2; margin-bottom: 0.5rem; }
+        }
+      `}</style>
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '1.75rem', color: 'var(--text)', fontWeight: 800 }}>Site Settings</h1>
           <p style={{ fontFamily: 'var(--font-body)', color: 'var(--text-faint)', fontSize: '0.88rem', marginTop: '0.25rem' }}>Control global site content, logo, hero, contact info and your technology stack marquee.</p>
         </div>
-        <button className="admin-btn-save" onClick={save} disabled={saving} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <button className="admin-btn-save" onClick={save} disabled={saving} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', minHeight: '44px' }}>
           {saving ? <Loader size={15} style={{ animation: 'spin 1s linear infinite' }} /> : <Save size={15} />}
           {saved ? 'Saved ✓' : 'Save Changes'}
         </button>
@@ -125,7 +150,7 @@ export default function SettingsPanel() {
         <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.82rem', color: 'var(--text-faint)', marginBottom: '1.25rem', lineHeight: 1.6 }}>
           Upload your logo to an image host (e.g. <a href="https://imgur.com" target="_blank" rel="noopener" style={{ color: 'var(--primary)' }}>imgur.com</a>, Cloudinary, etc.) and paste the URL below. Leave blank to use the text logo.
         </p>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+        <div className="form-grid-2">
           <div>
             <label className="admin-label">Logo Image URL (optional)</label>
             <input className="admin-input" {...f('logoUrl')} placeholder="https://i.imgur.com/yourlogo.png" />
@@ -146,7 +171,7 @@ export default function SettingsPanel() {
       {/* Brand & Hero */}
       <div className="admin-card">
         <p className="admin-card-title">Brand & Hero</p>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+        <div className="form-grid-2">
           <div><label className="admin-label">Agency Name</label><input className="admin-input" {...f('agencyName')} placeholder="C Sharp" /></div>
           <div><label className="admin-label">Tagline</label><input className="admin-input" {...f('tagline')} placeholder="The Digital Auteur" /></div>
         </div>
@@ -160,18 +185,18 @@ export default function SettingsPanel() {
         />
 
         {/* Hero background: image or video toggle */}
-        <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1rem', marginTop: '0.5rem' }}>
+        <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
           <button
             className={heroMode === 'image' ? 'admin-btn-save' : 'admin-btn-ghost'}
-            onClick={() => setData((d: any) => ({ ...d, heroVideoUrl: '' }))}
-            style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.82rem' }}
+            onClick={() => setHeroMode('image')}
+            style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.82rem', minHeight: '44px', cursor: 'pointer' }}
           >
             <ImageIcon size={14} /> Image background
           </button>
           <button
             className={heroMode === 'video' ? 'admin-btn-save' : 'admin-btn-ghost'}
-            onClick={() => setData((d: any) => ({ ...d, heroBackgroundImage: '' }))}
-            style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.82rem' }}
+            onClick={() => setHeroMode('video')}
+            style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.82rem', minHeight: '44px', cursor: 'pointer' }}
           >
             <Video size={14} /> Video background
           </button>
@@ -186,7 +211,7 @@ export default function SettingsPanel() {
                 <button
                   type="button"
                   onClick={() => imageInputRef.current?.click()}
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem', background: 'var(--surface-high)', border: '1.5px solid var(--border-strong)', borderRadius: '0.5rem', cursor: 'none', fontFamily: 'var(--font-body)', fontSize: '0.82rem', color: 'var(--text-muted)', transition: 'border-color 0.2s' }}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem', background: 'var(--surface-high)', border: '1.5px solid var(--border-strong)', borderRadius: '0.5rem', cursor: 'pointer', fontFamily: 'var(--font-body)', fontSize: '0.82rem', color: 'var(--text-muted)', transition: 'border-color 0.2s', minHeight: '44px' }}
                 >
                   <Upload size={14} />
                   Upload image from device
@@ -214,20 +239,40 @@ export default function SettingsPanel() {
             <button
               type="button"
               onClick={() => videoInputRef.current?.click()}
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem', background: 'var(--surface-high)', border: '1.5px solid var(--border-strong)', borderRadius: '0.5rem', cursor: 'none', fontFamily: 'var(--font-body)', fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: '1rem' }}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem', background: 'var(--surface-high)', border: '1.5px solid var(--border-strong)', borderRadius: '0.5rem', cursor: 'pointer', fontFamily: 'var(--font-body)', fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: '1rem', minHeight: '44px' }}
             >
               <Upload size={14} />
               Upload video from device
             </button>
             <input ref={videoInputRef} type="file" accept="video/*" style={{ display: 'none' }} onChange={async e => {
                 const file = e.target.files?.[0];
+                console.log('Video file selected:', file?.name, file?.size, file?.type);
                 if (!file) return;
                 const form = new FormData();
                 form.append('files', file);
                 setData((d: any) => ({ ...d, heroVideoUrl: 'Uploading…' }));
-                const res = await fetch('/api/upload', { method: 'POST', body: form });
-                const { urls } = await res.json();
-                if (urls?.[0]) setData((d: any) => ({ ...d, heroVideoUrl: urls[0] }));
+                try {
+                  console.log('Starting video upload...');
+                  const res = await fetch('/api/upload', { method: 'POST', body: form });
+                  console.log('Upload response status:', res.status, res.ok);
+                  if (!res.ok) {
+                    const errorText = await res.text();
+                    console.error('Upload error response:', errorText);
+                    throw new Error(`Upload failed with status ${res.status}: ${errorText}`);
+                  }
+                  const json = await res.json();
+                  console.log('Upload response:', json);
+                  if (json.urls?.[0]) {
+                    console.log('Video URL set:', json.urls[0]);
+                    setData((d: any) => ({ ...d, heroVideoUrl: json.urls[0] }));
+                  } else {
+                    throw new Error('No URL returned from upload: ' + JSON.stringify(json));
+                  }
+                } catch (err) {
+                  console.error('Video upload error:', err);
+                  setData((d: any) => ({ ...d, heroVideoUrl: '' }));
+                  alert(`Upload failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
+                }
                 e.target.value = '';
             }} />
             {data.heroVideoUrl && data.heroVideoUrl !== 'Uploading…' && (
@@ -250,12 +295,12 @@ export default function SettingsPanel() {
 
       {/* Technology Stack Marquee */}
       <div className="admin-card">
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
-          <div>
+        <div className="marquee-head">
+          <div style={{ minWidth: 0 }}>
             <p className="admin-card-title" style={{ marginBottom: '0.25rem' }}>Technology Stack Marquee</p>
             <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.8rem', color: 'var(--text-faint)' }}>These appear in the "Technologies we use" marquee on the homepage. Add names only, or include logo URLs for visual marks.</p>
           </div>
-          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexShrink: 0 }}>
+          <div className="marquee-actions">
             <button className="admin-btn-ghost" onClick={loadTechStackPreset} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.82rem' }}>
               Load modern stack
             </button>
@@ -273,9 +318,9 @@ export default function SettingsPanel() {
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           {partners.map((p: any, i: number) => (
-            <div key={i} style={{ display: 'grid', gridTemplateColumns: '80px 1fr 1fr auto', gap: '0.75rem', alignItems: 'center', padding: '0.75rem', background: 'var(--surface-high)', borderRadius: '0.75rem', border: '1px solid var(--border)' }}>
+            <div key={i} className="partner-grid" style={{ padding: '0.75rem', background: 'var(--surface-high)', borderRadius: '0.75rem', border: '1px solid var(--border)' }}>
               {/* Preview */}
-              <div style={{ width: 80, height: 40, background: 'var(--surface)', borderRadius: '0.4rem', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', padding: '4px' }}>
+              <div style={{ width: 80, height: 40, background: 'var(--surface)', borderRadius: '0.4rem', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', padding: '4px', flexShrink: 0 }}>
                 {p.imageUrl ? (
                   <img src={p.imageUrl} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
                 ) : (
@@ -300,12 +345,12 @@ export default function SettingsPanel() {
               </div>
               <input
                 className="admin-input"
-                style={{ marginBottom: 0 }}
+                style={{ marginBottom: 0, display: 'none' }}
                 value={p.imageUrl || ''}
                 onChange={e => updatePartner(i, 'imageUrl', e.target.value)}
                 placeholder="https://... logo image URL (optional SVG/PNG)"
               />
-              <button className="admin-btn-danger" onClick={() => removePartner(i)} style={{ padding: '0.5rem', flexShrink: 0 }}>
+              <button className="admin-btn-danger" onClick={() => removePartner(i)} style={{ padding: '0.5rem', flexShrink: 0, minHeight: '44px' }}>
                 <Trash2 size={14} />
               </button>
             </div>
@@ -316,7 +361,7 @@ export default function SettingsPanel() {
       {/* Contact Info */}
       <div className="admin-card">
         <p className="admin-card-title">Contact Info</p>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+        <div className="form-grid-2">
           <div><label className="admin-label">Address</label><input className="admin-input" {...f('address')} placeholder="25 Independence Ave, Accra, Ghana" /></div>
           <div><label className="admin-label">Phone</label><input className="admin-input" {...f('phone')} placeholder="+233 30 000 0000" /></div>
           <div><label className="admin-label">Email</label><input className="admin-input" {...f('email')} placeholder="hello@csharp.agency" /></div>
@@ -331,7 +376,7 @@ export default function SettingsPanel() {
       {/* Social Links */}
       <div className="admin-card">
         <p className="admin-card-title">Social Links</p>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+        <div className="form-grid-2">
           <div><label className="admin-label">LinkedIn URL</label><input className="admin-input" {...f('linkedinUrl')} placeholder="https://linkedin.com/company/..." /></div>
           <div><label className="admin-label">Twitter / X URL</label><input className="admin-input" {...f('twitterUrl')} placeholder="https://twitter.com/..." /></div>
           <div><label className="admin-label">Instagram URL</label><input className="admin-input" {...f('instagramUrl')} placeholder="https://instagram.com/..." /></div>

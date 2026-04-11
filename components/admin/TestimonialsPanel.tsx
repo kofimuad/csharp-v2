@@ -43,12 +43,23 @@ export default function TestimonialsPanel() {
 
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem' }}>
+      <style>{`
+        .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+        .form-grid-2-flex { display: grid; grid-template-columns: 1fr 120px; gap: 1rem; }
+        @media (max-width: 1024px) {
+          .form-grid-3 { grid-template-columns: 1fr 1fr; }
+          .form-grid-2-flex { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 768px) {
+          .form-grid-3, .form-grid-2-flex { grid-template-columns: 1fr; }
+        }
+      `}</style>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '1.75rem', color: 'var(--text)', fontWeight: 800 }}>Testimonials</h1>
           <p style={{ fontFamily: 'var(--font-body)', color: 'var(--text-faint)', fontSize: '0.88rem', marginTop: '0.25rem' }}>{items.length} testimonials.</p>
         </div>
-        <button className="admin-btn-save" onClick={() => setShowNew(v => !v)} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <button className="admin-btn-save" onClick={() => setShowNew(v => !v)} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', minHeight: '44px' }}>
           <Plus size={15} /> Add Testimonial
         </button>
       </div>
@@ -56,20 +67,20 @@ export default function TestimonialsPanel() {
       {showNew && (
         <div className="admin-card" style={{ borderColor: 'var(--primary)' }}>
           <p className="admin-card-title">New Testimonial</p>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
+          <div className="form-grid-3">
             <div><label className="admin-label">Name *</label><input className="admin-input" value={newData.name} onChange={e => setNewData(d => ({ ...d, name: e.target.value }))} placeholder="Ama Asante" /></div>
             <div><label className="admin-label">Role</label><input className="admin-input" value={newData.role} onChange={e => setNewData(d => ({ ...d, role: e.target.value }))} placeholder="CEO" /></div>
             <div><label className="admin-label">Company</label><input className="admin-input" value={newData.company} onChange={e => setNewData(d => ({ ...d, company: e.target.value }))} placeholder="Novus Tech" /></div>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 120px', gap: '1rem' }}>
+          <div className="form-grid-2-flex">
             <div>
               <label className="admin-label">Quote *</label>
               <textarea className="admin-textarea" value={newData.text} onChange={e => setNewData(d => ({ ...d, text: e.target.value }))} placeholder="What they said about you…" />
             </div>
             <div><label className="admin-label">Initials</label><input className="admin-input" value={newData.initials} onChange={e => setNewData(d => ({ ...d, initials: e.target.value }))} placeholder="AA (auto)" /></div>
           </div>
-          <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.25rem' }}>
-            <button className="admin-btn-save" onClick={create} disabled={saving === 'new'} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.25rem', flexWrap: 'wrap' }}>
+            <button className="admin-btn-save" onClick={create} disabled={saving === 'new'} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', minHeight: '44px' }}>
               {saving === 'new' ? <Loader size={14} style={{ animation: 'spin 1s linear infinite' }} /> : <Plus size={14} />} Create
             </button>
             <button className="admin-btn-ghost" onClick={() => setShowNew(false)}>Cancel</button>
@@ -82,7 +93,7 @@ export default function TestimonialsPanel() {
           {editId === t._id ? (
             <>
               <p className="admin-card-title">Editing</p>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
+              <div className="form-grid-3">
                 <div><label className="admin-label">Name</label><input className="admin-input" value={editData.name || ''} onChange={e => setEditData((d: any) => ({ ...d, name: e.target.value }))} /></div>
                 <div><label className="admin-label">Role</label><input className="admin-input" value={editData.role || ''} onChange={e => setEditData((d: any) => ({ ...d, role: e.target.value }))} /></div>
                 <div><label className="admin-label">Company</label><input className="admin-input" value={editData.company || ''} onChange={e => setEditData((d: any) => ({ ...d, company: e.target.value }))} /></div>
@@ -91,25 +102,25 @@ export default function TestimonialsPanel() {
               <textarea className="admin-textarea" value={editData.text || ''} onChange={e => setEditData((d: any) => ({ ...d, text: e.target.value }))} />
               <label className="admin-label">Initials</label>
               <input className="admin-input" value={editData.initials || ''} onChange={e => setEditData((d: any) => ({ ...d, initials: e.target.value }))} style={{ maxWidth: 100 }} />
-              <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.25rem' }}>
-                <button className="admin-btn-save" onClick={() => saveEdit(t._id)} disabled={saving === t._id} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.25rem', flexWrap: 'wrap' }}>
+                <button className="admin-btn-save" onClick={() => saveEdit(t._id)} disabled={saving === t._id} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', minHeight: '44px' }}>
                   {saving === t._id ? <Loader size={14} style={{ animation: 'spin 1s linear infinite' }} /> : <Save size={14} />} Save
                 </button>
                 <button className="admin-btn-ghost" onClick={() => setEditId(null)}>Cancel</button>
               </div>
             </>
           ) : (
-            <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'flex-start' }}>
+            <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'flex-start', flexWrap: 'wrap' }}>
               <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'linear-gradient(135deg, var(--primary), var(--primary-container))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-body)', fontWeight: 700, fontSize: '0.82rem', color: '#000', flexShrink: 0 }}>{t.initials}</div>
-              <div style={{ flex: 1 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.3rem' }}>
+              <div style={{ flex: 1, minWidth: 200 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.3rem', flexWrap: 'wrap' }}>
                   <span style={{ fontFamily: 'var(--font-body)', fontWeight: 600, color: 'var(--text)' }}>{t.name}</span>
                   <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.8rem', color: 'var(--text-faint)' }}>{t.role}, {t.company}</span>
                   {!t.visible && <span className="admin-badge admin-badge-red">Hidden</span>}
                 </div>
                 <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.88rem', color: 'var(--text-muted)', lineHeight: 1.6, fontStyle: 'italic' }}>"{t.text}"</p>
               </div>
-              <div style={{ display: 'flex', gap: '0.5rem', flexShrink: 0 }}>
+              <div style={{ display: 'flex', gap: '0.5rem', flexShrink: 0, flexWrap: 'wrap' }}>
                 <button className="admin-btn-ghost" onClick={() => { setEditId(t._id); setEditData({ ...t }); }}>Edit</button>
                 <button className="admin-btn-ghost" onClick={() => quickUpdate(t._id, { visible: !t.visible })} title="Toggle visibility">{t.visible ? <EyeOff size={14} /> : <Eye size={14} />}</button>
                 <button className="admin-btn-danger" onClick={() => del(t._id)}><Trash2 size={14} /></button>

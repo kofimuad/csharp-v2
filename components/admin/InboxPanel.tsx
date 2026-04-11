@@ -36,7 +36,16 @@ export default function InboxPanel() {
 
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem' }}>
+      <style>{`
+        .inbox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        @media (max-width: 1024px) {
+          .inbox-grid { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 768px) {
+          .inbox-grid { grid-template-columns: 1fr; }
+        }
+      `}</style>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '1.75rem', color: 'var(--text)', fontWeight: 800 }}>Inbox</h1>
           <p style={{ fontFamily: 'var(--font-body)', color: 'var(--text-faint)', fontSize: '0.88rem', marginTop: '0.25rem' }}>
@@ -54,21 +63,21 @@ export default function InboxPanel() {
           <p style={{ fontFamily: 'var(--font-body)', color: 'var(--text-faint)' }}>No messages yet. They'll appear here when people submit the contact form.</p>
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: selected ? '1fr 1fr' : '1fr', gap: '1.5rem' }}>
+        <div className="inbox-grid" style={{ gridTemplateColumns: selected ? 'var(--cols)' : '1fr' }}>
           {/* List */}
-          <div>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
             {items.map(item => (
               <div
                 key={item._id}
                 onClick={() => open(item)}
                 style={{ padding: '1.25rem 1.5rem', background: 'var(--surface)', border: `1px solid ${selected?._id === item._id ? 'var(--primary)' : 'var(--border)'}`, borderRadius: '1rem', marginBottom: '0.75rem', cursor: 'pointer', transition: 'border-color 0.2s', position: 'relative' }}
               >
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', flexWrap: 'wrap' }}>
                   <div style={{ marginTop: '2px', color: item.read ? 'var(--text-faint)' : 'var(--primary)', flexShrink: 0 }}>
                     {item.read ? <MailOpen size={16} /> : <Mail size={16} />}
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
                       <span style={{ fontFamily: 'var(--font-body)', fontWeight: item.read ? 500 : 700, color: 'var(--text)', fontSize: '0.95rem' }}>{item.name}</span>
                       <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'var(--text-faint)', flexShrink: 0 }}>
                         {new Date(item.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
@@ -86,13 +95,13 @@ export default function InboxPanel() {
           {/* Detail pane */}
           {selected && (
             <div className="admin-card" style={{ position: 'sticky', top: '2rem', height: 'fit-content' }}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
                 <div>
                   <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.4rem', fontWeight: 800, color: 'var(--text)' }}>{selected.name}</h2>
                   <a href={`mailto:${selected.email}`} style={{ fontFamily: 'var(--font-body)', fontSize: '0.88rem', color: 'var(--primary)', textDecoration: 'none' }}>{selected.email}</a>
                 </div>
                 <div style={{ display: 'flex', gap: '0.5rem' }}>
-                  <button className="admin-btn-danger" onClick={() => del(selected._id)}><Trash2 size={14} /></button>
+                  <button className="admin-btn-danger" onClick={() => del(selected._id)} style={{ minHeight: '44px' }}><Trash2 size={14} /></button>
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
@@ -104,7 +113,7 @@ export default function InboxPanel() {
               <div style={{ background: 'var(--surface-high)', borderRadius: '0.75rem', padding: '1.25rem', marginBottom: '1.5rem' }}>
                 <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.95rem', color: 'var(--text)', lineHeight: 1.75, whiteSpace: 'pre-wrap' }}>{selected.message}</p>
               </div>
-              <a href={`mailto:${selected.email}?subject=Re: Your enquiry`} className="admin-btn-save" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none' }}>
+              <a href={`mailto:${selected.email}?subject=Re: Your enquiry`} className="admin-btn-save" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none', minHeight: '44px' }}>
                 <Mail size={14} /> Reply via Email
               </a>
             </div>

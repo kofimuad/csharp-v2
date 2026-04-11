@@ -37,12 +37,21 @@ export default function AboutPanel() {
 
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem' }}>
+      <style>{`
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; }
+        @media (max-width: 768px) {
+          .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 480px) {
+          .stats-grid { grid-template-columns: 1fr; }
+        }
+      `}</style>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '1.75rem', color: 'var(--text)', fontWeight: 800 }}>About Page</h1>
           <p style={{ fontFamily: 'var(--font-body)', color: 'var(--text-faint)', fontSize: '0.88rem', marginTop: '0.25rem' }}>Edit your company story, vision, mission, and stats.</p>
         </div>
-        <button className="admin-btn-save" onClick={save} disabled={saving} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <button className="admin-btn-save" onClick={save} disabled={saving} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', minHeight: '44px' }}>
           {saving ? <Loader size={15} style={{ animation: 'spin 1s linear infinite' }} /> : <Save size={15} />}
           {saved ? 'Saved!' : 'Save Changes'}
         </button>
@@ -61,14 +70,14 @@ export default function AboutPanel() {
       <div className="admin-card">
         <p className="admin-card-title">Body Text Paragraphs</p>
         {(data.body || []).map((para: string, i: number) => (
-          <div key={i} style={{ display: 'flex', gap: '0.75rem', marginBottom: '0.75rem', alignItems: 'flex-start' }}>
+          <div key={i} style={{ display: 'flex', gap: '0.75rem', marginBottom: '0.75rem', alignItems: 'flex-start', flexWrap: 'wrap' }}>
             <textarea
               className="admin-textarea"
-              style={{ marginBottom: 0, flex: 1 }}
+              style={{ marginBottom: 0, flex: 1, minWidth: 200 }}
               value={para}
               onChange={e => updateArrayItem('body', i, e.target.value)}
             />
-            <button className="admin-btn-danger" onClick={() => removeArrayItem('body', i)} style={{ marginTop: '0.25rem', padding: '0.5rem' }}><Trash2 size={14} /></button>
+            <button className="admin-btn-danger" onClick={() => removeArrayItem('body', i)} style={{ marginTop: '0.25rem', padding: '0.5rem', minHeight: '44px' }}><Trash2 size={14} /></button>
           </div>
         ))}
         <button className="admin-btn-ghost" onClick={() => addArrayItem('body')} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.5rem' }}>
@@ -79,9 +88,9 @@ export default function AboutPanel() {
       <div className="admin-card">
         <p className="admin-card-title">Rotating Quotes</p>
         {(data.quotes || []).map((q: string, i: number) => (
-          <div key={i} style={{ display: 'flex', gap: '0.75rem', marginBottom: '0.75rem' }}>
-            <input className="admin-input" style={{ marginBottom: 0, flex: 1 }} value={q} onChange={e => updateArrayItem('quotes', i, e.target.value)} />
-            <button className="admin-btn-danger" onClick={() => removeArrayItem('quotes', i)} style={{ padding: '0.5rem' }}><Trash2 size={14} /></button>
+          <div key={i} style={{ display: 'flex', gap: '0.75rem', marginBottom: '0.75rem', flexWrap: 'wrap' }}>
+            <input className="admin-input" style={{ marginBottom: 0, flex: 1, minWidth: 200 }} value={q} onChange={e => updateArrayItem('quotes', i, e.target.value)} />
+            <button className="admin-btn-danger" onClick={() => removeArrayItem('quotes', i)} style={{ padding: '0.5rem', minHeight: '44px' }}><Trash2 size={14} /></button>
           </div>
         ))}
         <button className="admin-btn-ghost" onClick={() => addArrayItem('quotes')} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.5rem' }}>
@@ -91,7 +100,7 @@ export default function AboutPanel() {
 
       <div className="admin-card">
         <p className="admin-card-title">Stats</p>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1rem' }}>
+        <div className="stats-grid">
           {(data.stats || []).map((s: any, i: number) => (
             <div key={i} style={{ background: 'var(--surface-high)', borderRadius: '0.75rem', padding: '1rem', border: '1px solid var(--border)' }}>
               <label className="admin-label">Value</label>
