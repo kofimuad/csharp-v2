@@ -1,0 +1,7 @@
+# Netlify configuration to allow all HTTP methods for API routes
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+  force = true
+  methods = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
