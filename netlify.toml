@@ -1,4 +1,11 @@
-# Netlify configuration to allow all HTTP methods for API routes
+
+# Netlify configuration for Next.js
+
+[build]
+  command = "npm run build"
+  publish = ".next"
+  functions = "netlify/functions"
+
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/api/:splat"
