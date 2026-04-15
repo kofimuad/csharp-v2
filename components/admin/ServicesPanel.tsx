@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { Plus, Trash2, Save, Loader, GripVertical, Eye, EyeOff } from 'lucide-react';
+import { Plus, Trash2, Save, Loader, Eye, EyeOff } from 'lucide-react';
 
 const ICON_OPTIONS = ['Monitor','Smartphone','Layers','BarChart3','Settings2','Code','Globe','Palette','Database','Shield','Zap','Users'];
 
@@ -11,7 +11,7 @@ export default function ServicesPanel() {
   const [editId, setEditId] = useState<string | null>(null);
   const [editData, setEditData] = useState<any>({});
   const [showNew, setShowNew] = useState(false);
-  const [newData, setNewData] = useState({ title: '', description: '', icon: 'Monitor', link: '', linkLabel: '', visible: true });
+  const [newData, setNewData] = useState<any>({ title: '', category: '', description: '', items: [], icon: 'Monitor', link: '', linkLabel: '', visible: true });
 
   const load = () => fetch('/api/services/all').then(r => r.json()).then(d => { setServices(d); setLoading(false); });
   useEffect(() => { load(); }, []);
@@ -32,7 +32,7 @@ export default function ServicesPanel() {
     if (!newData.title || !newData.description) return;
     setSaving('new');
     await fetch('/api/services', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...newData, order: services.length + 1 }) });
-    setSaving(null); setShowNew(false); setNewData({ title: '', description: '', icon: 'Monitor', link: '', linkLabel: '', visible: true }); load();
+    setSaving(null); setShowNew(false); setNewData({ title: '', category: '', description: '', items: [], icon: 'Monitor', link: '', linkLabel: '', visible: true }); load();
   };
 
   const startEdit = (s: any) => { setEditId(s._id); setEditData({ ...s }); };
@@ -66,20 +66,24 @@ export default function ServicesPanel() {
           <div className="form-grid-2">
             <div>
               <label className="admin-label">Title *</label>
-              <input className="admin-input" value={newData.title} onChange={e => setNewData(d => ({ ...d, title: e.target.value }))} placeholder="Service name" />
+              <input className="admin-input" value={newData.title} onChange={e => setNewData((d: any) => ({ ...d, title: e.target.value }))} placeholder="Build" />
             </div>
             <div>
               <label className="admin-label">Icon</label>
-              <select className="admin-select" value={newData.icon} onChange={e => setNewData(d => ({ ...d, icon: e.target.value }))}>
+              <select className="admin-select" value={newData.icon} onChange={e => setNewData((d: any) => ({ ...d, icon: e.target.value }))}>
                 {ICON_OPTIONS.map(ic => <option key={ic} value={ic}>{ic}</option>)}
               </select>
             </div>
           </div>
-          <label className="admin-label">Description *</label>
-          <textarea className="admin-textarea" value={newData.description} onChange={e => setNewData(d => ({ ...d, description: e.target.value }))} placeholder="Describe this service…" />
+          <label className="admin-label">Category (uppercase tagline)</label>
+          <input className="admin-input" value={newData.category} onChange={e => setNewData((d: any) => ({ ...d, category: e.target.value }))} placeholder="DIGITAL PRODUCT DEVELOPMENT" />
+          <label className="admin-label">Pitch / Description *</label>
+          <textarea className="admin-textarea" value={newData.description} onChange={e => setNewData((d: any) => ({ ...d, description: e.target.value }))} placeholder="We design and engineer…" />
+          <label className="admin-label">Sub-items (one per line)</label>
+          <textarea className="admin-textarea" value={(newData.items || []).join('\n')} onChange={e => setNewData((d: any) => ({ ...d, items: e.target.value.split('\n').map((s: string) => s.trim()).filter(Boolean) }))} placeholder={'Web apps\nMobile apps\nUI/UX design\nMVP development'} />
           <div className="form-grid-2">
-            <div><label className="admin-label">Link (optional)</label><input className="admin-input" value={newData.link} onChange={e => setNewData(d => ({ ...d, link: e.target.value }))} placeholder="/portfolio" /></div>
-            <div><label className="admin-label">Link Label</label><input className="admin-input" value={newData.linkLabel} onChange={e => setNewData(d => ({ ...d, linkLabel: e.target.value }))} placeholder="View case study" /></div>
+            <div><label className="admin-label">Link (optional)</label><input className="admin-input" value={newData.link} onChange={e => setNewData((d: any) => ({ ...d, link: e.target.value }))} placeholder="/portfolio" /></div>
+            <div><label className="admin-label">Link Label</label><input className="admin-input" value={newData.linkLabel} onChange={e => setNewData((d: any) => ({ ...d, linkLabel: e.target.value }))} placeholder="View case study" /></div>
           </div>
           <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
             <button className="admin-btn-save" onClick={create} disabled={saving === 'new'} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', minHeight: '44px' }}>
@@ -104,8 +108,12 @@ export default function ServicesPanel() {
                   </select>
                 </div>
               </div>
-              <label className="admin-label">Description</label>
+              <label className="admin-label">Category (uppercase tagline)</label>
+              <input className="admin-input" value={editData.category || ''} onChange={e => setEditData((d: any) => ({ ...d, category: e.target.value }))} placeholder="DIGITAL PRODUCT DEVELOPMENT" />
+              <label className="admin-label">Pitch / Description</label>
               <textarea className="admin-textarea" value={editData.description} onChange={e => setEditData((d: any) => ({ ...d, description: e.target.value }))} />
+              <label className="admin-label">Sub-items (one per line)</label>
+              <textarea className="admin-textarea" value={(editData.items || []).join('\n')} onChange={e => setEditData((d: any) => ({ ...d, items: e.target.value.split('\n').map((s: string) => s.trim()).filter(Boolean) }))} />
               <div className="form-grid-2">
                 <div><label className="admin-label">Link</label><input className="admin-input" value={editData.link || ''} onChange={e => setEditData((d: any) => ({ ...d, link: e.target.value }))} /></div>
                 <div><label className="admin-label">Link Label</label><input className="admin-input" value={editData.linkLabel || ''} onChange={e => setEditData((d: any) => ({ ...d, linkLabel: e.target.value }))} /></div>

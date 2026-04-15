@@ -28,8 +28,10 @@ export interface IService {
   _id?: string;
   order: number;
   icon: string;
+  category: string;
   title: string;
   description: string;
+  items: string[];
   link?: string;
   linkLabel?: string;
   visible: boolean;
@@ -37,8 +39,10 @@ export interface IService {
 const ServiceSchema = new Schema<IService>({
   order: { type: Number, default: 0 },
   icon: { type: String, default: 'Code' },
+  category: { type: String, default: '' },
   title: { type: String, required: true },
   description: { type: String, required: true },
+  items: [{ type: String }],
   link: String,
   linkLabel: String,
   visible: { type: Boolean, default: true },

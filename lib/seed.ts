@@ -69,15 +69,44 @@ export async function seedDatabase() {
     });
   }
 
-  // Seed Services
-  const servicesCount = await Service.countDocuments();
-  if (servicesCount === 0) {
+  // Seed Services — v2 migration: wipe legacy services and install Build/Grow/Automate/Rank
+  const needsServiceMigration = (await Service.countDocuments({ category: { $in: [null, ''] } })) > 0
+    || (await Service.countDocuments()) === 0;
+  if (needsServiceMigration) {
+    await Service.deleteMany({});
     await Service.insertMany([
-      { order: 1, icon: 'Monitor', title: 'Web Development', description: 'We build fast, scalable, and beautiful websites and web applications. From marketing sites that convert to complex SaaS platforms with real-time capabilities — we handle the full stack with precision and craft.', link: '/portfolio', linkLabel: 'View case study', visible: true },
-      { order: 2, icon: 'Smartphone', title: 'Mobile App Development', description: 'Native and cross-platform mobile apps for iOS and Android. We use React Native and Flutter to deliver polished, performant apps that users actually love — not just tolerate.', link: '/portfolio', linkLabel: 'View case study', visible: true },
-      { order: 3, icon: 'Layers', title: 'UX / UI Design', description: 'Research-driven design that balances aesthetics with usability. From user research and wireframing through to final high-fidelity UI and interactive prototypes — we design systems that feel inevitable.', link: '/portfolio', linkLabel: 'View case study', visible: true },
-      { order: 4, icon: 'BarChart3', title: 'Business & Tech Consulting', description: 'Strategic technology advice to help businesses make the right digital decisions. We audit your current stack, map out your roadmap, and give you a clear path from where you are to where you need to be.', link: '/contact', linkLabel: 'Book a consultation', visible: true },
-      { order: 5, icon: 'Settings2', title: 'IT Support & Maintenance', description: 'Ongoing technical support, system maintenance, security monitoring, and infrastructure management. We keep your digital systems healthy so you can focus on running your business.', link: '/contact', linkLabel: 'Get support', visible: true },
+      {
+        order: 1, icon: 'Code',
+        category: 'DIGITAL PRODUCT DEVELOPMENT',
+        title: 'Build',
+        description: 'We design and engineer web and mobile products that are fast, scalable, and built for real users — from concept to launch and beyond.',
+        items: ['Web apps', 'Mobile apps', 'UI/UX design', 'MVP development'],
+        link: '/portfolio', linkLabel: 'View case study', visible: true,
+      },
+      {
+        order: 2, icon: 'BarChart3',
+        category: 'BUSINESS GROWTH STRATEGY',
+        title: 'Grow',
+        description: 'We help businesses identify opportunities, define clear strategies, and execute plans that create sustainable competitive advantage.',
+        items: ['Market analysis', 'Go-to-market', 'Revenue strategy', 'Partnerships'],
+        link: '/contact', linkLabel: 'Book a consultation', visible: true,
+      },
+      {
+        order: 3, icon: 'Zap',
+        category: 'PROCESS & WORKFLOW AUTOMATION',
+        title: 'Automate',
+        description: 'We eliminate repetitive work by automating your core business processes — so your team can focus on what actually moves the needle.',
+        items: ['Workflow design', 'System integration', 'AI automation', 'Operations'],
+        link: '/contact', linkLabel: 'Talk to us', visible: true,
+      },
+      {
+        order: 4, icon: 'Globe',
+        category: 'SEARCH & DIGITAL VISIBILITY',
+        title: 'Rank',
+        description: 'We put your business in front of the right people at the right time — through technical SEO, content strategy, and data-driven search performance.',
+        items: ['Technical SEO', 'Content strategy', 'Search analytics', 'Local SEO'],
+        link: '/contact', linkLabel: 'Get found', visible: true,
+      },
     ]);
   }
 

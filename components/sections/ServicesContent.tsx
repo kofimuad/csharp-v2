@@ -65,9 +65,18 @@ export default function ServicesContent({ services, initialOpenIndex = 0 }: { se
                           style={{
                             color: isOpen || isHovered ? 'var(--text)' : 'var(--text)',
                             transition: 'color 0.2s',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'flex-start',
+                            gap: '0.25rem',
                           }}
                         >
-                          {s.title}
+                          {s.category && (
+                            <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.68rem', letterSpacing: '0.14em', color: 'var(--text-faint)', fontWeight: 500 }}>
+                              {s.category}
+                            </span>
+                          )}
+                          <span>{s.title}</span>
                         </span>
                       </div>
                       {/* Arrow shows green → on hover (like image 3), rotates to × when open */}
@@ -95,6 +104,21 @@ export default function ServicesContent({ services, initialOpenIndex = 0 }: { se
                     <div className="accordion-body">
                       <div className="accordion-body-inner">
                         <p className="accordion-desc">{s.description}</p>
+                        {Array.isArray(s.items) && s.items.length > 0 && (
+                          <ul style={{ listStyle: 'none', padding: 0, margin: '1rem 0 1.25rem', display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                            {s.items.map((it: string, idx: number) => (
+                              <li key={idx} style={{
+                                fontFamily: 'var(--font-body)',
+                                fontSize: '0.82rem',
+                                color: 'var(--text)',
+                                padding: '0.4rem 0.85rem',
+                                border: '1px solid var(--border-strong)',
+                                borderRadius: '999px',
+                                background: 'var(--surface-high)',
+                              }}>{it}</li>
+                            ))}
+                          </ul>
+                        )}
                         {s.link && (
                           <Link href={s.link} className="accordion-link">
                             {s.linkLabel || 'Learn more'} →
