@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import SiteLayout from '@/components/layout/SiteLayout';
 import connectDB from '@/lib/mongodb';
 import { SiteSettings } from '@/lib/models';
