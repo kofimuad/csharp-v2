@@ -20,15 +20,11 @@ export async function PUT(request: Request) {
   try {
     await connectDB();
     const body = await request.json();
-    let about = await About.findOne();
-    if (!about) {
-      about = await About.create(body);
-    } else {
-      Object.assign(about, body);
-      await about.save();
-    }
+    delete body._id;
+    const about = await About.findOneAndUpdate({}, body, { new: true, upsert: true, setDefaultsOnInsert: true });
     return NextResponse.json(about);
   } catch (error) {
+    console.error('About PUT failed:', error);
     return NextResponse.json({ error: 'Failed to update about' }, { status: 500 });
   }
 }
